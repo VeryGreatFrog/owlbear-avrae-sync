@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"target": "esnext",
+		"lib": ["es2022"],
+		"module": "ESNext",
+		"moduleResolution": "Node",
+		"paths": {
+			"@/*": ["./*"],
+			"~/*": ["../*"]
+		},
+		"resolveJsonModule": true,
+		"strict": true,
+		"noImplicitAny": true,
+		"noEmit": false,
+		"outDir": "./dist",
+		"sourceMap": false,
+		"esModuleInterop": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true
+	}
+}
