@@ -1,6 +1,6 @@
 import type { Collection, Db } from "mongodb";
 
-import type { initData } from "./api";
+import type { initData } from "./api.js";
 import { MongoClient, ServerApiVersion } from "mongodb";
 // Connect to database
 export const collections: { activeInits?: Collection<initData> } = {};

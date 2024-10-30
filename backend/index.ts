@@ -2,14 +2,17 @@ import type { NextFunction, Request, Response, } from "express";
 import http from "node:http";
 import dotenv from "dotenv";
 import { Server } from "socket.io";
-import { app } from "./src/app/app";
-import { initSocket } from "./src/app/socket";
-import { startDatabase } from "./src/database/database";
+import { app } from "./src/app/app.js";
+import { initSocket } from "./src/app/socket.js";
+import { startDatabase } from "./src/database/database.js";
 
-import discord from "./src/discord-bot/client";
+import discord from "./src/discord-bot/client.js";
 
 // Load middleware
-import "./src/app/middleware";
+import "./src/app/middleware.js";
+
+// Run deploy commands
+import "./src/discord-bot/deploy-commands.js";
 
 // load env files
 dotenv.config();

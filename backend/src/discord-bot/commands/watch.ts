@@ -1,7 +1,7 @@
 import type { ChatInputCommandInteraction } from "discord.js";
-import { insertInit } from "@/src/database/api";
+import { insertInit } from "@/src/database/api.js";
 import { SlashCommandBuilder } from "discord.js";
-import { trackedMessageCache } from "../../database/database";
+import { trackedMessageCache } from "../../database/database.js";
 
 export default {
 	data: new SlashCommandBuilder()
