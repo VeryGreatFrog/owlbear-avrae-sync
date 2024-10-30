@@ -13,7 +13,7 @@ jobs:
             - uses: actions/setup-node@v4
             - name: Installing extension dependencies
               working-directory: ./extension
-              run: npm install
+              run: npm install --include dev
             - name: Installing backend dependencies
               working-directory: ./backend
               run: npm install
