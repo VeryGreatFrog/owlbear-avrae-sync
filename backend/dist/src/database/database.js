@@ -2,6 +2,7 @@ import { MongoClient, ServerApiVersion } from "mongodb";
 // Connect to database
 export const collections = {};
 let database = null;
+export const trackedMessageCache = [];
 export async function startDatabase() {
     let client;
     try {
@@ -27,7 +28,11 @@ export async function startDatabase() {
         // Get collections
         collections.activeInits = database.collection("activeInits");
         console.log(`MongoDB: Established connection ${database.databaseName} with ${(await database.collections()).length} collections.`);
-        // Database change
+        // get cache
+        const result = await collections.activeInits.find({}, { projection: { _id: 0, messageId: 1 } }).toArray();
+        const array = result.map(doc => doc.messageId);
+        trackedMessageCache.push(...array);
+        console.log(`MongoDB: Loaded ${trackedMessageCache.length} messages to the cache to watch.`);
     }
     catch (err) {
         console.log("critical", err);

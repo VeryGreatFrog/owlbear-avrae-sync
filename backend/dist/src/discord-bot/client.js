@@ -1,10 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { Client, Collection, GatewayIntentBits, IntentsBitField } from "discord.js";
+import { Client, Collection, GatewayIntentBits, IntentsBitField, Partials } from "discord.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const client = new Client({ intents: [GatewayIntentBits.Guilds, IntentsBitField.Flags.GuildMessages] });
+const client = new Client({ partials: [Partials.Message], intents: [GatewayIntentBits.Guilds, IntentsBitField.Flags.GuildMessages] });
 export default client;
 const eventsPath = path.join(__dirname, "events");
 const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith(".ts"));

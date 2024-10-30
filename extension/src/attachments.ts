@@ -84,7 +84,7 @@ export const updateCombatants2 = async (combatants: Record<string, CombatantData
         }
     }
 
-    const updateConditions = async (item: Image, boundingBox: BoundingBox, combatant: CombatantData, dpiScale: number) => {
+    const updateConditions = async (item: Image, boundingBox: BoundingBox, combatant: CombatantData) => {
         console.log("Updating Conditions Status")
         const currentConditions = currentAttachments.filter((a) => {
             const metadata = a.metadata[getPluginId("metadata")]
@@ -117,7 +117,7 @@ export const updateCombatants2 = async (combatants: Record<string, CombatantData
                 if (combatant.hp !== combatantCache[combatantName]?.hp || combatant.maxHp !== combatantCache[combatantName]?.maxHp) await updateHealth(item, boundingBox, combatant, dpiScale)
                 if (combatant.thp !== combatantCache[combatantName]?.thp) await updateThp(item, boundingBox, combatant, dpiScale)
                 if (combatant.hpStatus !== combatantCache[combatantName]?.hpStatus) await updateHealthStatus(item, boundingBox, combatant, dpiScale)
-                if (combatant.conditions !== combatantCache[combatantName]?.conditions) await updateConditions(item, boundingBox, combatant, dpiScale)
+                if (combatant.conditions !== combatantCache[combatantName]?.conditions) await updateConditions(item, boundingBox, combatant)
             }
         }
     }

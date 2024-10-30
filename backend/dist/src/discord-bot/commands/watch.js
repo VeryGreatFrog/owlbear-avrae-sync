@@ -1,32 +1,33 @@
+import { insertInit } from "@/src/database/api";
+import { trackedMessageCache } from "@/src/database/database";
 import { SlashCommandBuilder } from "discord.js";
 export default {
     data: new SlashCommandBuilder()
         .setName("watch")
         .setDescription("Start watching init in this channel!"),
     async execute(interaction) {
-        await interaction.reply("Watching for changes in this channel!");
-        const id = await interaction.channel?.id;
-        console.log(id);
+        const id = interaction.channel?.id;
+        if (!id) {
+            await interaction.reply("Not a valid channel to watch initiative..");
+            return;
+        }
+        const messages = await interaction.channel?.messages.fetchPinned() || [];
         let initPost = null;
-        // sync every 10 seconds
-        setInterval(async () => {
-            const messages = await interaction.channel?.messages.fetchPinned() || [];
-            for (const x of messages) {
-                const data = x[1];
-                if (data.author.id === "261302296103747584") {
-                    initPost = data;
-                    console.log(initPost.content);
-                    await fetch(`http://localhost:3000/api/updateInit/${id}`, {
-                        method: "POST",
-                        body: JSON.stringify({ data: data.content }),
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                    });
-                    console.log("Request was made");
-                    break;
-                }
+        for (const x of messages) {
+            const data = x[1];
+            if (data.author.id === "261302296103747584") {
+                initPost = data;
             }
-        }, 5000);
+        }
+        if (!initPost?.id) {
+            await interaction.reply("Could not find a pinned avrae init post.");
+            return;
+        }
+        if (trackedMessageCache.includes(initPost?.id)) {
+            await interaction.reply("Avrae Init is already being tracked in this channel.");
+            return;
+        }
+        insertInit(id, initPost?.id, initPost?.content);
+        await interaction.reply("Now watching for changes in this channel!");
     },
 };
