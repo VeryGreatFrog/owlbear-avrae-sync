@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 import { updateCombatants2 } from './attachments';
 
-const socket = io("http://localhost:3000", {transports: ['websocket', 'polling', 'flashsocket']})
+const socket = io("", {transports: ['websocket', 'polling', 'flashsocket']})
 
 socket.connect()
 export interface CombatantData {
@@ -25,7 +25,7 @@ export interface CombatantData {
 socket.on("initUpdate", async (channelId) => {
     console.log("Received an init update for " + channelId)
     if (channelId === (document.querySelector("#channel-id") as HTMLInputElement).value) {
-        const response = await fetch(`http://localhost:3000/api/getInit/${channelId}`)
+        const response = await fetch(`/api/getInit/${channelId}`)
         const content : Record<string, CombatantData> = await response.json()
         updateCombatants2(content)
     }
