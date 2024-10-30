@@ -345,4 +345,4 @@ const buildConditionTokens = async (item: Image, boundingBox: BoundingBox, condi
     return images
 }
 
-const urlBase = "http://localhost:5173"
+const urlBase = import.meta.NODE_ENV == "production" ? "https://owlbear-avrae-sync.com" : "http://localhost:5173";
