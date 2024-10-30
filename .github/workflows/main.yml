@@ -2,7 +2,7 @@ name: Build project
 on:
     push:
         branches:
-            - master
+            - main
 env:
     NODE_ENV: production
 jobs:
