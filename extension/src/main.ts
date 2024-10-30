@@ -1,10 +1,6 @@
 import './style.css'
 import OBR from '@owlbear-rodeo/sdk'
-import { getPluginId, isPlainObject } from "./helper.ts"
 
-import { Image, isImage, buildImage } from "@owlbear-rodeo/sdk";
-
-import type { Shape } from '@owlbear-rodeo/sdk';
 OBR.onReady(() => {
   document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
@@ -14,9 +10,7 @@ OBR.onReady(() => {
     <div id="table"> </div>
   </div>
 `
-  let input = document.querySelector<HTMLInputElement>("#channel-id")
 })
 
-const urlBase = "http://localhost:5173"
 
 import "./socket.ts"
