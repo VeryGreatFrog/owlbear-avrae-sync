@@ -1,6 +1,9 @@
 import type { NextFunction, Request, Response, } from "express";
+import fs from "node:fs";
 import http from "node:http";
+import path from "node:path";
 import dotenv from "dotenv";
+import express from "express";
 import { Server } from "socket.io";
 import { app } from "./src/app/app.js";
 import { initSocket } from "./src/app/socket.js";
@@ -19,6 +22,13 @@ dotenv.config();
 
 // connect to mongodb database
 startDatabase();
+
+// Server extension frontend
+app.use(express.static(process.env.frontendPath ?? "../extension"));
+
+app.get("/*", (req, res) => {
+	res.send(fs.readFileSync(path.resolve(process.env.frontendPath ?? "../extension", "index.html"), { encoding: "utf-8" }));
+});
 
 // create server and listen to ports
 export const httpServer = http.createServer(app);
