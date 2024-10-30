@@ -30,7 +30,8 @@ app.use(
 				"style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
 				"font-src": ["'self'", "data: https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
 				"connect-src": ["'self'", "https://discord.com", "*.google-analytics.com", "https://cdn.jsdelivr.net"],
-				"worker-src": ["'self'", "blob:"]
+				"worker-src": ["'self'", "blob:"],
+				"frame-ancestors": ["'self'", "https://www.owlbear.rodeo"]
 			},
 			useDefaults: true
 		},
