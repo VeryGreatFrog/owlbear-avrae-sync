@@ -12,7 +12,7 @@
 		"strict": true,
 		"noImplicitAny": true,
 		"noEmit": false,
-		"outDir": "./dist",
+		"outDir": "../build/backend",
 		"sourceMap": false,
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
