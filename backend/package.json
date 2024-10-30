@@ -8,8 +8,7 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"build": "tsc",
-		"deploy": "npm run build && dotenv -- node dist/src/discord-bot/deploy-commands.js"
+		"build": "tsc && tsc-alias"
 	},
 	"dependencies": {
 		"@antfu/eslint-config": "^3.8.0",
@@ -30,6 +29,7 @@
 	"devDependencies": {
 		"@types/cors": "^2.8.17",
 		"@types/express": "^5.0.0",
-		"dotenv-cli": "^7.4.2"
+		"dotenv-cli": "^7.4.2",
+		"tsc-alias": "^1.8.10"
 	}
 }

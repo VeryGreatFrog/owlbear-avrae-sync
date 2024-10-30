@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import { collections, trackedMessageCache } from "../../database/database";
+import { collections, trackedMessageCache } from "../../database/database.js";
 export default {
     data: new SlashCommandBuilder()
         .setName("unwatch")

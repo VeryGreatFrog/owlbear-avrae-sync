@@ -4,7 +4,7 @@ import cors from "cors";
 import express from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
-import { app } from "./app";
+import { app } from "./app.js";
 // Function to run on all requests
 app.use(async (req, res, next) => {
     console.log(`API: Request for URL "${req.url}" recieved.`);

@@ -1,6 +1,6 @@
-import { app } from "../app/app";
-import { broadcastInit } from "../app/socket";
-import { collections, trackedMessageCache } from "./database";
+import { app } from "../app/app.js";
+import { broadcastInit } from "../app/socket.js";
+import { collections, trackedMessageCache } from "./database.js";
 export async function insertInit(channelId, messageId, newContent) {
     const data = { channelId, content: newContent, messageId, lastUpdated: Date.now() };
     try {

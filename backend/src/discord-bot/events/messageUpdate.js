@@ -1,5 +1,5 @@
-import { insertInit } from "@/src/database/api";
-import { trackedMessageCache } from "@/src/database/database";
+import { insertInit } from "../../../src/database/api.js";
+import { trackedMessageCache } from "../../../src/database/database.js";
 import { Events } from "discord.js";
 export default {
     name: Events.MessageUpdate,

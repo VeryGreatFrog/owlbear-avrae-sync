@@ -10,7 +10,6 @@ const commands = [];
 // Grab all the command folders from the commands directory you created earlier
 const commandsPath = path.join(__dirname, "commands");
 const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith(".js"));
-console.log(process.env);
 for (const file of commandFiles) {
     const filePath = path.join(commandsPath, file);
     const commandModule = await import(`file://${filePath}`);
