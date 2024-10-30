@@ -163,7 +163,7 @@ const buildAcToken = async (item: Image, boundingBox: BoundingBox, ac: number, d
                 textAlign: "CENTER",
                 textAlignVertical: "MIDDLE",
                 fontFamily: "roboto",
-                fontSize: acImage.image.height * acImage.scale.y * dpiScale / 4,
+                fontSize: acImage.image.height * acImage.scale.y * dpiScale / 3,
                 fontWeight: 400,
                 lineHeight: 1,
                 padding: 0
@@ -208,7 +208,7 @@ const buildHealthToken = async (item: Image, boundingBox: BoundingBox, hp: [numb
                 textAlign: "CENTER",
                 textAlignVertical: "MIDDLE",
                 fontFamily: "roboto",
-                fontSize: healthImage.image.height * healthImage.scale.y * dpiScale / 4,
+                fontSize: healthImage.image.height * healthImage.scale.y * dpiScale / 3,
                 fontWeight: 400,
                 lineHeight: 1,
                 padding: 0
@@ -253,7 +253,7 @@ const buildHealthStatusToken = async (item: Image, boundingBox: BoundingBox, hpS
                 textAlign: "CENTER",
                 textAlignVertical: "MIDDLE",
                 fontFamily: "roboto",
-                fontSize: healthStatusImage.image.height * healthStatusImage.scale.y * dpiScale / 4,
+                fontSize: healthStatusImage.image.height * healthStatusImage.scale.y * dpiScale / 3,
                 fontWeight: 400,
                 lineHeight: 1,
                 padding: 0
@@ -298,7 +298,7 @@ const buildThpToken = async (item: Image, boundingBox: BoundingBox, thp: number,
                 textAlign: "CENTER",
                 textAlignVertical: "MIDDLE",
                 fontFamily: "roboto",
-                fontSize: thpImage.image.height * thpImage.scale.y * dpiScale / 4,
+                fontSize: thpImage.image.height * thpImage.scale.y * dpiScale / 3,
                 fontWeight: 400,
                 lineHeight: 1,
                 padding: 0
