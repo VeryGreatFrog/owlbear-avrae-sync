@@ -14,14 +14,16 @@ OBR.onReady(() => {
 `
 })
 
-
-document.querySelector("#clear-tokens")?.addEventListener("click", async () => {
-  console.log("is clicked")
-  const currentAttachments = await OBR.scene.items.getItems<Shape>((item) => {
-    const metadata = item.metadata[getPluginId("metadata")];
-    return Boolean(isPlainObject(metadata));
-  });
-  console.log(currentAttachments)
-  await OBR.scene.items.deleteItems(currentAttachments.map((a) => a.id))
+OBR.onReady(() => {
+  document.querySelector("#clear-tokens")?.addEventListener("click", async () => {
+    console.log("is clicked")
+    const currentAttachments = await OBR.scene.items.getItems<Shape>((item) => {
+      const metadata = item.metadata[getPluginId("metadata")];
+      return Boolean(isPlainObject(metadata));
+    });
+    console.log(currentAttachments)
+    await OBR.scene.items.deleteItems(currentAttachments.map((a) => a.id))
+  })
 })
+
 import "./socket.ts"
