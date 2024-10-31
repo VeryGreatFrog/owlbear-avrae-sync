@@ -108,6 +108,7 @@ export const updateCombatants2 = async (combatants: Record<string, CombatantData
     for (const combatantName in combatants) {
         const combatant = combatants[combatantName]
         for (const item of items) {
+            if (!item.visible) continue;
             if (item.text.plainText.toLowerCase().replaceAll(" ", "") === combatantName.toLowerCase().replaceAll(" ", "")) {
                 console.log(combatant)
                 const dpiScale = sceneDpi / (item.grid.dpi);

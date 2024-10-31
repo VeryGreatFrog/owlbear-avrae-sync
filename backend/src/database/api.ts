@@ -64,7 +64,7 @@ const getData = (combatant: string): CombatantData => {
 	const nameMatch = combatant.match(/^#*\s*(?:\d+:\s*)?([^\s<]+(?:\s[^\s<]+)*)/);
 	let name = "";
 	if (nameMatch && nameMatch.length >= 2)
-		name = nameMatch[1];
+		name = nameMatch[1].replace(" -", "");
 
 	let health = "";
 	const healthMatch = combatant.match(/<([^<>]+)>/);
@@ -146,7 +146,8 @@ app.get("/api/getInit/:id", async (req: Request, res: Response) => {
 
 		return res.json(returnData);
 	}
-	catch {
+	catch (e) {
+		console.log(e);
 		return res.status(500).json({ error: "Unknown server error occured, please try again." });
 	}
 });
