@@ -19,8 +19,8 @@ document.querySelector("#clear-tokens")?.addEventListener("click", async () => {
   const currentAttachments = await OBR.scene.items.getItems<Shape>((item) => {
     const metadata = item.metadata[getPluginId("metadata")];
     return Boolean(isPlainObject(metadata));
-});
-await OBR.scene.items.deleteItems(currentAttachments.map((a) => a.id))
-
+  });
+  console.log(currentAttachments)
+  await OBR.scene.items.deleteItems(currentAttachments.map((a) => a.id))
 })
 import "./socket.ts"
