@@ -16,6 +16,7 @@ OBR.onReady(() => {
 
 
 document.querySelector("#clear-tokens")?.addEventListener("click", async () => {
+  console.log("is clicked")
   const currentAttachments = await OBR.scene.items.getItems<Shape>((item) => {
     const metadata = item.metadata[getPluginId("metadata")];
     return Boolean(isPlainObject(metadata));
