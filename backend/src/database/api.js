@@ -35,7 +35,7 @@ const getData = (combatant) => {
     const nameMatch = combatant.match(/^#*\s*(?:\d+:\s*)?([^\s<]+(?:\s[^\s<]+)*)/);
     let name = "";
     if (nameMatch && nameMatch.length >= 2)
-        name = nameMatch[1].replace(" -", "");
+        name = nameMatch[1].replace("- ", "");
     let health = "";
     const healthMatch = combatant.match(/<([^<>]+)>/);
     if (healthMatch && healthMatch.length >= 2)
