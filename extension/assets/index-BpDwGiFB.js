@@ -5,4 +5,4 @@
     <input type="text" placeholder="Channel ID" id="channel-id" value="1301245033302851614"/>
     <button type="button" id="clear-tokens"> Clear all effects </button>
   </div>
-`});var Dt;(Dt=document.querySelector("#clear-tokens"))==null||Dt.addEventListener("click",async()=>{const n=await q.scene.items.getItems(e=>{const t=e.metadata[U("metadata")];return!!K(t)});console.log(n),await q.scene.items.deleteItems(n.map(e=>e.id))});
+`});var Dt;(Dt=document.querySelector("#clear-tokens"))==null||Dt.addEventListener("click",async()=>{console.log("is clicked");const n=await q.scene.items.getItems(e=>{const t=e.metadata[U("metadata")];return!!K(t)});console.log(n),await q.scene.items.deleteItems(n.map(e=>e.id))});
