@@ -189,7 +189,7 @@ const buildHealthToken = async (item: Image, boundingBox: BoundingBox, hp: [numb
         .position({ x: boundingBox.min.x, y: boundingBox.min.y })
         .metadata({ [getPluginId("metadata")]: { isHealth: true } })
         .locked(true)
-        .visible(true)
+        .visible(item.visible)
         .scale({ x: item.scale.x * item.image.width / 256, y: item.scale.y * item.image.height / 266 })
         .layer("ATTACHMENT")
         .disableHit(true)
@@ -220,7 +220,7 @@ const buildHealthToken = async (item: Image, boundingBox: BoundingBox, hp: [numb
         .attachedTo(healthImage.id)
         .layer("TEXT")
         .locked(true)
-        .visible(true)
+        .visible(item.visible)
         .build()
     return [healthImage, acText]
 }
@@ -234,7 +234,7 @@ const buildHealthStatusToken = async (item: Image, boundingBox: BoundingBox, hpS
         .position({ x: boundingBox.min.x, y: boundingBox.min.y })
         .metadata({ [getPluginId("metadata")]: { isHealthStatus: true } })
         .locked(true)
-        .visible(true)
+        .visible(item.visible)
         .scale({ x: item.scale.x * item.image.width / 256, y: item.scale.y * item.image.height / 266 })
         .layer("ATTACHMENT")
         .disableHit(true)
@@ -265,7 +265,7 @@ const buildHealthStatusToken = async (item: Image, boundingBox: BoundingBox, hpS
         .attachedTo(healthStatusImage.id)
         .layer("TEXT")
         .locked(true)
-        .visible(true)
+        .visible(item.visible)
         .build()
     return [healthStatusImage, acText]
 }
@@ -279,7 +279,7 @@ const buildThpToken = async (item: Image, boundingBox: BoundingBox, thp: number,
         .position({ x: boundingBox.max.x, y: boundingBox.min.y })
         .metadata({ [getPluginId("metadata")]: { isThp: true } })
         .locked(true)
-        .visible(true)
+        .visible(item.visible)
         .scale({ x: item.scale.x * item.image.width / 256, y: item.scale.y * item.image.height / 266 })
         .layer("ATTACHMENT")
         .disableHit(true)
@@ -310,7 +310,7 @@ const buildThpToken = async (item: Image, boundingBox: BoundingBox, thp: number,
         .attachedTo(thpImage.id)
         .layer("TEXT")
         .locked(true)
-        .visible(true)
+        .visible(item.visible)
         .build()
     return [thpImage, acText]
 }
@@ -334,7 +334,7 @@ const buildConditionTokens = async (item: Image, boundingBox: BoundingBox, condi
                 .position({ x: boundingBox.min.x, y: boundingBox.max.y })
                 .metadata({ [getPluginId("metadata")]: { isCondition: true } })
                 .locked(true)
-                .visible(true)
+                .visible(item.visible)
                 .scale({ x: item.scale.x * item.image.width / 256, y: item.scale.y * item.image.height / 266 })
                 .layer("ATTACHMENT")
                 .disableHit(true)
