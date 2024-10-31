@@ -108,7 +108,6 @@ export const updateCombatants2 = async (combatants: Record<string, CombatantData
     for (const combatantName in combatants) {
         const combatant = combatants[combatantName]
         for (const item of items) {
-            if (!item.visible) continue;
             if (item.text.plainText.toLowerCase().replaceAll(" ", "") === combatantName.toLowerCase().replaceAll(" ", "")) {
                 console.log(combatant)
                 const dpiScale = sceneDpi / (item.grid.dpi);
@@ -145,7 +144,7 @@ const buildAcToken = async (item: Image, boundingBox: BoundingBox, ac: number, d
         .position({ x: boundingBox.max.x, y: boundingBox.min.y })
         .metadata({ [getPluginId("metadata")]: { isAc: true } })
         .locked(true)
-        .visible(true)
+        .visible(item.visible)
         .scale({ x: item.scale.x * item.image.width / 256, y: item.scale.y * item.image.height / 266 })
         .layer("ATTACHMENT")
         .disableHit(true)
@@ -176,7 +175,7 @@ const buildAcToken = async (item: Image, boundingBox: BoundingBox, ac: number, d
         .attachedTo(acImage.id)
         .layer("TEXT")
         .locked(true)
-        .visible(true)
+        .visible(acImage.visible)
         .build()
     return [acImage, acText]
 }
