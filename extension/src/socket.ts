@@ -1,9 +1,9 @@
-import { io } from 'socket.io-client';
-import { updateCombatants2 } from './attachments';
+import { io } from "socket.io-client";
+import { updateCombatants2 } from "./attachments";
 
-const socket = io("", {transports: ['websocket', 'polling', 'flashsocket']})
+const socket = io("", { transports: ["websocket", "polling", "flashsocket"] });
 
-socket.connect()
+socket.connect();
 export interface CombatantData {
 	name: string;
 	isPlayer: boolean;
@@ -23,10 +23,10 @@ export interface CombatantData {
 }
 
 socket.on("initUpdate", async (channelId) => {
-    console.log("Received an init update for " + channelId)
-    if (channelId === (document.querySelector("#channel-id") as HTMLInputElement).value) {
-        const response = await fetch(`/api/getInit/${channelId}`)
-        const content : Record<string, CombatantData> = await response.json()
-        updateCombatants2(content)
-    }
-})
+	console.log(`Received an init update for ${channelId}`);
+	if (channelId === (document.querySelector("#channel-id") as HTMLInputElement).value) {
+		const response = await fetch(`/api/getInit/${channelId}`);
+		const content: Record<string, CombatantData> = await response.json();
+		updateCombatants2(content);
+	}
+});

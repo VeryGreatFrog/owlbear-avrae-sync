@@ -48,8 +48,7 @@
   
     "eslint.workingDirectories": [
       "backend",
-      "frontend",
-      "shared"
+      "extension",
     ]
   }
   

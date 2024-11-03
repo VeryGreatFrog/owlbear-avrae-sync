@@ -1,20 +1,21 @@
 {
-  "name": "extension",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "@types/node": "^22.8.4",
-    "typescript": "~5.6.2",
-    "vite": "^5.4.10"
-  },
-  "dependencies": {
-    "@owlbear-rodeo/sdk": "^3.0.0",
-    "socket.io-client": "^4.8.1"
-  }
+	"name": "extension",
+	"type": "module",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"preview": "vite preview"
+	},
+	"dependencies": {
+		"@antfu/eslint-config": "^3.8.0",
+		"@owlbear-rodeo/sdk": "^3.0.0",
+		"socket.io-client": "^4.8.1"
+	},
+	"devDependencies": {
+		"@types/node": "^22.8.4",
+		"typescript": "~5.6.2",
+		"vite": "^5.4.10"
+	}
 }
