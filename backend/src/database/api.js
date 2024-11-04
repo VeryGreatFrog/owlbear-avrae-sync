@@ -23,6 +23,7 @@ export async function insertInit(channelId, messageId, newContent) {
     }
 }
 const getData = (combatant) => {
+    console.log(combatant);
     let hpStatus;
     let hp;
     let thp;
@@ -96,7 +97,6 @@ app.get("/api/getInit/:id", async (req, res) => {
         for (const match of matches || []) {
             const d = getData(match);
             returnData[d.name] = d;
-            console.log(d);
         }
         return res.json(returnData);
     }
