@@ -49,6 +49,7 @@ interface CombatantData {
 }
 
 const getData = (combatant: string): CombatantData => {
+	console.log(combatant);
 	let hpStatus;
 	let hp;
 	let thp;
@@ -130,7 +131,6 @@ app.get("/api/getInit/:id", async (req: Request, res: Response) => {
 		for (const match of matches || []) {
 			const d = getData(match);
 			returnData[d.name] = d;
-			console.log(d);
 		}
 
 		return res.json(returnData);

@@ -68,14 +68,14 @@ export const buildHealthToken = async (item: Image, boundingBox: BoundingBox, hp
 		.locked(true)
 		.disableHit(false)
 		.layer("ATTACHMENT")
-		.scale({ x: (item.scale.x * item.image.width / 243) * (Math.max(0.02, Math.min(1, hp[0] / hp[1]))) * 0.8, y: item.scale.y / item.scale.y })
+		.scale({ x: (item.scale.x * item.image.width / 243) * (Math.max(0.02, Math.min(1, hp[0] / hp[1]))) * 0.8, y: item.grid.dpi / await OBR.scene.grid.getDpi() * 0.5 })
 		.position({ x: boundingBox.min.x + (item.image.width * dpiScale * 0.1 * item.scale.x), y: boundingBox.min.y })
 		.build();
 
 	const healthBorder = buildImage({
 		height: 22,
 		width: 243,
-		url: `${urlBase}/health/border4.png`,
+		url: `${urlBase}/health/border.png`,
 		mime: "image/png"
 	}, {
 		dpi: item.grid.dpi,
@@ -87,7 +87,7 @@ export const buildHealthToken = async (item: Image, boundingBox: BoundingBox, hp
 		.locked(true)
 		.disableHit(false)
 		.layer("ATTACHMENT")
-		.scale({ x: (item.scale.x * item.image.width / 243) * 0.8, y: item.scale.y / item.scale.y })
+		.scale({ x: (item.scale.x * item.image.width / 243) * 0.8, y: item.grid.dpi / await OBR.scene.grid.getDpi() * 0.5 })
 		.position({ x: boundingBox.min.x + (item.image.width * dpiScale * 0.1 * item.scale.x), y: boundingBox.min.y })
 		.zIndex(healthBar.zIndex + 1)
 		.build();
@@ -139,14 +139,14 @@ export const buildHealthStatusToken = async (item: Image, boundingBox: BoundingB
 		.locked(true)
 		.disableHit(false)
 		.layer("ATTACHMENT")
-		.scale({ x: (item.scale.x * item.image.width / 243) * 0.8, y: item.scale.y / item.scale.y })
+		.scale({ x: (item.scale.x * item.image.width / 243) * 0.8, y: item.grid.dpi / await OBR.scene.grid.getDpi() * 0.5 })
 		.position({ x: boundingBox.min.x + (item.image.width * dpiScale * 0.1 * item.scale.x), y: boundingBox.min.y })
 		.build();
 
 	const healthBorder = buildImage({
 		height: 22,
 		width: 243,
-		url: `${urlBase}/health/border4.png`,
+		url: `${urlBase}/health/border.png`,
 		mime: "image/png"
 	}, {
 		dpi: item.grid.dpi,
@@ -158,7 +158,7 @@ export const buildHealthStatusToken = async (item: Image, boundingBox: BoundingB
 		.locked(true)
 		.disableHit(false)
 		.layer("ATTACHMENT")
-		.scale({ x: (item.scale.x * item.image.width / 243) * 0.8, y: item.scale.y / item.scale.y })
+		.scale({ x: (item.scale.x * item.image.width / 243) * 0.8, y: item.grid.dpi / await OBR.scene.grid.getDpi() * 0.5 })
 		.position({ x: boundingBox.min.x + (item.image.width * dpiScale * 0.1 * item.scale.x), y: boundingBox.min.y })
 		.zIndex(healthBar.zIndex + 1)
 		.build();
@@ -192,51 +192,6 @@ export const buildHealthStatusToken = async (item: Image, boundingBox: BoundingB
 		.position({ x: boundingBox.min.x + (item.image.width * dpiScale * 0.1 * item.scale.x), y: boundingBox.min.y })
 		.build();
 	return [healthBar, healthBorder, healthText];
-};
-
-export const buildThpToken = async (item: Image, boundingBox: BoundingBox, thp: number, dpiScale: number) => {
-	const thpImage = buildImage(
-		{ height: 64, width: 64, url: `${urlBase}/temp.png`, mime: "image/png" },
-		{ dpi: item.grid.dpi, offset: { x: 128, y: 0 } }
-	)
-		.attachedTo(item.id)
-		.position({ x: boundingBox.max.x, y: boundingBox.min.y })
-		.metadata({ [getPluginId("metadata")]: { isThp: true } })
-		.locked(true)
-		.visible(item.visible)
-		.scale({ x: item.scale.x * item.image.width / 256, y: item.scale.y * item.image.height / 266 })
-		.layer("ATTACHMENT")
-		.disableHit(true)
-		.build();
-	const acText = buildText()
-		.position({ x: boundingBox.max.x - (thpImage.image.width * 2 * dpiScale * thpImage.scale.x), y: boundingBox.min.y })
-		.text({
-			plainText: `+${thp.toString()}`,
-			type: "PLAIN",
-			style: {
-				fillColor: "black",
-				fillOpacity: 1,
-				strokeColor: "red",
-				strokeOpacity: 0,
-				strokeWidth: 0,
-				textAlign: "CENTER",
-				textAlignVertical: "MIDDLE",
-				fontFamily: "roboto",
-				fontSize: thpImage.image.height * thpImage.scale.y * dpiScale / 3,
-				fontWeight: 400,
-				lineHeight: 1,
-				padding: 0
-			},
-			richText: [],
-			width: thpImage.image.width * dpiScale * thpImage.scale.x,
-			height: thpImage.image.height * dpiScale * thpImage.scale.y
-		})
-		.attachedTo(thpImage.id)
-		.layer("TEXT")
-		.locked(true)
-		.visible(item.visible)
-		.build();
-	return [thpImage, acText];
 };
 
 const conditionTokens = ["blessed", "blinded", "charmed", "deafened", "frightened", "grappled", "incapacitated", "invisible", "paralyzed", "petrified", "poisoned", "prone", "restrained", "stunned", "unconscious"];

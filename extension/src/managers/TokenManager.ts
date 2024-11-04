@@ -1,4 +1,3 @@
-/* eslint-disable unused-imports/no-unused-vars */
 import type { BoundingBox, Image, Item, Shape } from "@owlbear-rodeo/sdk";
 import type { CombatantData } from "../socket";
 import OBR, { isImage } from "@owlbear-rodeo/sdk";
@@ -6,7 +5,7 @@ import OBR, { isImage } from "@owlbear-rodeo/sdk";
 import { reactive } from "vue";
 import { getPluginId, isPlainObject } from "../helper";
 import room from "./ChannelConnection";
-import { buildAcToken, buildConditionTokens, buildHealthStatusToken, buildHealthToken, buildThpToken } from "./TokenCreators";
+import { buildAcToken, buildConditionTokens, buildHealthStatusToken, buildHealthToken } from "./TokenCreators";
 
 export default reactive({
 	combatantCache: {} as Record<string, CombatantData>,
@@ -30,19 +29,6 @@ export default reactive({
 
 		const toAdd: Item[] = [];
 		const toDelete: string[] = [];
-
-		const updateAC = async (item: Image, boundingBox: BoundingBox, combatant: CombatantData, dpiScale: number) => {
-			console.log("Updating AC...");
-			const currentAc = currentAttachments.filter((a) => {
-				const metadata = a.metadata[getPluginId("metadata")];
-				return Boolean(isPlainObject(metadata) && metadata.isAc && a.attachedTo === item.id);
-			});
-
-			if (combatant.ac !== undefined)
-				toAdd.push(...await buildAcToken(item, boundingBox, combatant.ac, dpiScale));
-
-			toDelete.push(...currentAc.map(a => a.id));
-		};
 
 		const updateHealth = async (item: Image, boundingBox: BoundingBox, combatant: CombatantData, dpiScale: number) => {
 			console.log("Updating health");
@@ -102,12 +88,8 @@ export default reactive({
 					const dpiScale = sceneDpi / (item.grid.dpi);
 					const boundingBox = await OBR.scene.items.getItemBounds([item.id]);
 
-					// if (combatant.ac !== this.combatantCache[combatantName]?.ac)
-					// 	await updateAC(item, boundingBox, combatant, dpiScale);
 					if (combatant.hp !== this.combatantCache[combatantName]?.hp || combatant.maxHp !== this.combatantCache[combatantName]?.maxHp || combatant.thp !== this.combatantCache[combatantName]?.thp)
 						await updateHealth(item, boundingBox, combatant, dpiScale);
-					// if (combatant.thp !== this.combatantCache[combatantName]?.thp)
-					// 	await updateThp(item, boundingBox, combatant, dpiScale);
 					if (combatant.hpStatus !== this.combatantCache[combatantName]?.hpStatus)
 						await updateHealthStatus(item, boundingBox, combatant, dpiScale);
 					if (combatant.conditions !== this.combatantCache[combatantName]?.conditions)
