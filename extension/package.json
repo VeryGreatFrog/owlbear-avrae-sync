@@ -11,7 +11,9 @@
 	"dependencies": {
 		"@antfu/eslint-config": "^3.8.0",
 		"@owlbear-rodeo/sdk": "^3.0.0",
-		"socket.io-client": "^4.8.1"
+		"@vitejs/plugin-vue": "^5.1.4",
+		"socket.io-client": "^4.8.1",
+		"vue": "^3.5.12"
 	},
 	"devDependencies": {
 		"@types/node": "^22.8.4",

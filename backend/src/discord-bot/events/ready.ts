@@ -1,4 +1,6 @@
+import type { Request, Response } from "express";
 import type { ClientWithCommands } from "../client.js";
+import { app } from "@/src/app/app.js";
 import { Events } from "discord.js";
 
 export default {

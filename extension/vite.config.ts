@@ -1,8 +1,17 @@
-/** @type {import('vite').UserConfig} */
+import vue from "@vitejs/plugin-vue";
+
 export default {
-    root: '.',
-    build: {
-        outDir: '../build/extension',
-        emptyOutDir: true,
-    }
-}
+	root: ".",
+	plugins: [
+		vue(),
+	],
+	build: {
+		outDir: "../build/extension",
+		emptyOutDir: true,
+	},
+	server: {
+		proxy: {
+			"/api": "http://localhost:3000"
+		}
+	}
+};

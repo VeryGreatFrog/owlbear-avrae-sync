@@ -1,14 +1,12 @@
 import { io } from "socket.io-client";
-import { updateCombatants2 } from "./attachments";
+import room from "./managers/ChannelConnection";
+import tokenManager from "./managers/TokenManager";
 
-const socket = io("", { transports: ["websocket", "polling", "flashsocket"] });
+export const socket = io(import.meta.env.DEV ? "http://localhost:3000" : "", { transports: ["websocket", "polling", "flashsocket"] });
 
 socket.connect();
 export interface CombatantData {
 	name: string;
-	isPlayer: boolean;
-	isMonster: boolean;
-	isGenericCombatant: boolean;
 	// generic or monsters
 	hpStatus?: string;
 
@@ -23,10 +21,7 @@ export interface CombatantData {
 }
 
 socket.on("initUpdate", async (channelId) => {
-	console.log(`Received an init update for ${channelId}`);
-	if (channelId === (document.querySelector("#channel-id") as HTMLInputElement).value) {
-		const response = await fetch(`/api/getInit/${channelId}`);
-		const content: Record<string, CombatantData> = await response.json();
-		updateCombatants2(content);
+	if (channelId === room.channelID) {
+		tokenManager.runEffects();
 	}
 });

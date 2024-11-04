@@ -21,7 +21,8 @@ body {
 }
 
 h1 {
-  font-size: 2em;
+  font-size: 2rem;
+  margin: 0.3rem;
 }
 
 #app {
@@ -29,12 +30,4 @@ h1 {
   margin: 0 auto;
   padding: 0.5rem;
   text-align: center;
-}
-
-path {
-  fill: none;
-  stroke: #646464;
-  stroke-width: 1px;
-  stroke-dasharray: 2,2;
-  stroke-linejoin: round;
 }

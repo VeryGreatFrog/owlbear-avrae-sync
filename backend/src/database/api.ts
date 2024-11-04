@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { app } from "../app/app.js";
 import { broadcastInit } from "../app/socket.js";
+import client from "../discord-bot/client.js";
 import { collections, trackedMessageCache } from "./database.js";
 
 export interface initData {
@@ -34,9 +35,6 @@ export async function insertInit(channelId: string, messageId: string, newConten
 
 interface CombatantData {
 	name: string;
-	isPlayer: boolean;
-	isMonster: boolean;
-	isGenericCombatant: boolean;
 	// generic or monsters
 	hpStatus?: string;
 
@@ -51,9 +49,6 @@ interface CombatantData {
 }
 
 const getData = (combatant: string): CombatantData => {
-	let isPlayer = false;
-	let isMonster = false;
-	let isGenericCombatant = false;
 	let hpStatus;
 	let hp;
 	let thp;
@@ -72,7 +67,6 @@ const getData = (combatant: string): CombatantData => {
 		health = healthMatch[1];
 
 	if (health.includes("HP")) {
-		isPlayer = true;
 		if (health.includes("temp")) {
 			const [current, temp] = health.replace("HP", "").replace("temp", "").split(",");
 
@@ -87,11 +81,9 @@ const getData = (combatant: string): CombatantData => {
 		}
 	}
 	else if (health.includes("None")) {
-		isGenericCombatant = true;
 		hpStatus = "None";
 	}
 	else {
-		isMonster = true;
 		hpStatus = health;
 	}
 
@@ -116,9 +108,6 @@ const getData = (combatant: string): CombatantData => {
 	}
 	return {
 		name,
-		isPlayer,
-		isMonster,
-		isGenericCombatant,
 		hpStatus,
 		hp,
 		maxHp,

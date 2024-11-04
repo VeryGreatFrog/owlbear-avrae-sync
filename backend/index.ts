@@ -25,7 +25,7 @@ startDatabase();
 
 // Server extension frontend
 app.set("trust proxy", "loopback");
-app.use(express.static(process.env.frontendPath ?? "../extension"));
+app.use("/", express.static(path.resolve(process.env.frontendPath ?? "../extension")));
 app.get("/*", (req, res) => {
 	res.send(fs.readFileSync(path.resolve(process.env.frontendPath ?? "../extension", "index.html"), { encoding: "utf-8" }));
 });
