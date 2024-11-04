@@ -12,8 +12,8 @@ export default reactive({
 	updaterID: "",
 	// The unix timestamp of the last received update
 	lastUpdateMs: 0,
-	async setChannel(id: string) {
-		if (id.length <= 16) {
+	async setChannel(id: string, acceptEmpty = false) {
+		if (!acceptEmpty && id.length <= 16) {
 			await OBR.notification.show("That is not a valid channel ID.");
 		}
 

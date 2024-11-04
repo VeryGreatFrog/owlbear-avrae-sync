@@ -3,39 +3,39 @@ import OBR, { buildImage, buildText } from "@owlbear-rodeo/sdk";
 
 import { getPluginId } from "../helper";
 
-const urlBase = "https://owlbear-avrae-sync.com";
+const urlBase = import.meta.env.DEV ? "http://localhost:5173" : "https://owlbear-avrae-sync.com";
 
-export const buildGenericTokenWithText = async (parentOptions: { item: Image; boundingBox: BoundingBox; dpiScale: number; gridSize: Vector2 }, tokenOptions: { imageName: string; tokenText: string; position: Vector2 }) => {};
+export const buildGenericTokenWithText = async (parentOptions: { item: Image; boundingBox: BoundingBox; dpiScale: number; gridSize: Vector2 }, tokenOptions: { imageName: string; tokenText: string; position: Vector2 }) => { console.log(parentOptions, tokenOptions); };
 
 export const buildAcToken = async (item: Image, boundingBox: BoundingBox, ac: number, dpiScale: number) => {
 	const acImage = buildImage(
-		{ height: 64, width: 64, url: `${urlBase}/armorClass.png`, mime: "image/png" },
-		{ dpi: item.grid.dpi, offset: { x: 64, y: 0 } }
+		{ height: 256, width: 256, url: `${urlBase}/armorClass.svg`, mime: "image/svg" },
+		{ dpi: item.grid.dpi, offset: { x: 0, y: 10 } }
 	)
 		.attachedTo(item.id)
-		.position({ x: boundingBox.max.x, y: boundingBox.min.y })
+		.position({ x: boundingBox.min.x, y: boundingBox.min.y })
 		.metadata({ [getPluginId("metadata")]: { isAc: true } })
 		.locked(true)
 		.visible(item.visible)
-		.scale({ x: item.scale.x * item.image.width / 256, y: item.scale.y * item.image.height / 266 })
+		.scale({ x: item.scale.x * item.image.width / 256 * 0.1, y: item.scale.y / item.scale.y * 0.1 })
 		.layer("ATTACHMENT")
-		.disableHit(true)
+		.disableHit(false)
 		.build();
 	const acText = buildText()
-		.position({ x: boundingBox.max.x - acImage.image.width * dpiScale * acImage.scale.x, y: boundingBox.min.y })
+		.position({ x: boundingBox.min.x, y: boundingBox.min.y })
 		.text({
 			plainText: ac.toString(),
 			type: "PLAIN",
 			style: {
-				fillColor: "black",
+				fillColor: "white",
 				fillOpacity: 1,
-				strokeColor: "red",
-				strokeOpacity: 0,
-				strokeWidth: 0,
+				strokeColor: "black",
+				strokeOpacity: 1,
+				strokeWidth: 1,
 				textAlign: "CENTER",
 				textAlignVertical: "MIDDLE",
 				fontFamily: "roboto",
-				fontSize: acImage.image.height * acImage.scale.y * dpiScale / 3,
+				fontSize: 7,
 				fontWeight: 400,
 				lineHeight: 1,
 				padding: 0
@@ -52,94 +52,146 @@ export const buildAcToken = async (item: Image, boundingBox: BoundingBox, ac: nu
 	return [acImage, acText];
 };
 
-export const buildHealthToken = async (item: Image, boundingBox: BoundingBox, hp: [number, number], dpiScale: number) => {
-	const healthImage = buildImage(
-		{ height: 64, width: 128, url: `${urlBase}/health.png`, mime: "image/png" },
-		{ dpi: item.grid.dpi, offset: { x: 0, y: 0 } }
-	)
+export const buildHealthToken = async (item: Image, boundingBox: BoundingBox, hp: [number, number, number], dpiScale: number) => {
+	const healthBar = buildImage({
+		height: 22,
+		width: 243,
+		url: `${urlBase}/health/bar.png`,
+		mime: "image/png"
+	}, {
+		dpi: item.grid.dpi,
+		offset: { x: 0, y: 0 }
+	})
 		.attachedTo(item.id)
-		.position({ x: boundingBox.min.x, y: boundingBox.min.y })
 		.metadata({ [getPluginId("metadata")]: { isHealth: true } })
+		.visible(item.visible)
+		.locked(true)
+		.disableHit(false)
+		.layer("ATTACHMENT")
+		.scale({ x: (item.scale.x * item.image.width / 243) * (Math.max(0.02, Math.min(1, hp[0] / hp[1]))) * 0.8, y: item.scale.y / item.scale.y })
+		.position({ x: boundingBox.min.x + (item.image.width * dpiScale * 0.1 * item.scale.x), y: boundingBox.min.y })
+		.build();
+
+	const healthBorder = buildImage({
+		height: 22,
+		width: 243,
+		url: `${urlBase}/health/border4.png`,
+		mime: "image/png"
+	}, {
+		dpi: item.grid.dpi,
+		offset: { x: 0, y: 0 }
+	})
+		.attachedTo(item.id)
+		.metadata({ [getPluginId("metadata")]: { isHealth: true } })
+		.visible(item.visible)
+		.locked(true)
+		.disableHit(false)
+		.layer("ATTACHMENT")
+		.scale({ x: (item.scale.x * item.image.width / 243) * 0.8, y: item.scale.y / item.scale.y })
+		.position({ x: boundingBox.min.x + (item.image.width * dpiScale * 0.1 * item.scale.x), y: boundingBox.min.y })
+		.zIndex(healthBar.zIndex + 1)
+		.build();
+
+	const healthText = buildText()
+		.attachedTo(healthBar.id)
+		.layer("TEXT")
 		.locked(true)
 		.visible(item.visible)
-		.scale({ x: item.scale.x * item.image.width / 256, y: item.scale.y * item.image.height / 266 })
-		.layer("ATTACHMENT")
-		.disableHit(true)
-		.build();
-	const acText = buildText()
-		.position({ x: boundingBox.min.x, y: boundingBox.min.y })
 		.text({
-			plainText: `${hp[0]} / ${hp[1]}`,
+			plainText: `${hp[0]}/${hp[1]}${hp[2] ? ` + ${hp[2]}` : ""}`,
 			type: "PLAIN",
 			style: {
-				fillColor: "black",
+				fillColor: "white",
 				fillOpacity: 1,
-				strokeColor: "red",
-				strokeOpacity: 0,
-				strokeWidth: 0,
+				strokeColor: "black",
+				strokeOpacity: 1,
+				strokeWidth: 1,
 				textAlign: "CENTER",
 				textAlignVertical: "MIDDLE",
 				fontFamily: "roboto",
-				fontSize: healthImage.image.height * healthImage.scale.y * dpiScale / 3,
+				fontSize: 12,
 				fontWeight: 400,
 				lineHeight: 1,
 				padding: 0
 			},
 			richText: [],
-			width: healthImage.image.width * dpiScale * healthImage.scale.x,
-			height: healthImage.image.height * dpiScale * healthImage.scale.y
+			width: healthBorder.image.width * dpiScale * healthBorder.scale.x,
+			height: healthBorder.image.height * dpiScale * healthBorder.scale.y
 		})
-		.attachedTo(healthImage.id)
-		.layer("TEXT")
-		.locked(true)
-		.visible(item.visible)
+		.position({ x: boundingBox.min.x + (item.image.width * dpiScale * 0.1 * item.scale.x), y: boundingBox.min.y })
 		.build();
-	return [healthImage, acText];
+	return [healthBar, healthBorder, healthText];
 };
 
 export const buildHealthStatusToken = async (item: Image, boundingBox: BoundingBox, hpStatus: string, dpiScale: number) => {
-	const healthStatusImage = buildImage(
-		{ height: 64, width: 128, url: `${urlBase}/${hpStatus}.png`, mime: "image/png" },
-		{ dpi: item.grid.dpi, offset: { x: 0, y: 0 } }
-	)
+	const healthBar = buildImage({
+		height: 22,
+		width: 243,
+		url: `${urlBase}/health/${hpStatus}.png`,
+		mime: "image/png"
+	}, {
+		dpi: item.grid.dpi,
+		offset: { x: 0, y: 0 }
+	})
 		.attachedTo(item.id)
-		.position({ x: boundingBox.min.x, y: boundingBox.min.y })
 		.metadata({ [getPluginId("metadata")]: { isHealthStatus: true } })
+		.visible(item.visible)
+		.locked(true)
+		.disableHit(false)
+		.layer("ATTACHMENT")
+		.scale({ x: (item.scale.x * item.image.width / 243) * 0.8, y: item.scale.y / item.scale.y })
+		.position({ x: boundingBox.min.x + (item.image.width * dpiScale * 0.1 * item.scale.x), y: boundingBox.min.y })
+		.build();
+
+	const healthBorder = buildImage({
+		height: 22,
+		width: 243,
+		url: `${urlBase}/health/border4.png`,
+		mime: "image/png"
+	}, {
+		dpi: item.grid.dpi,
+		offset: { x: 0, y: 0 }
+	})
+		.attachedTo(item.id)
+		.metadata({ [getPluginId("metadata")]: { isHealthStatus: true } })
+		.visible(item.visible)
+		.locked(true)
+		.disableHit(false)
+		.layer("ATTACHMENT")
+		.scale({ x: (item.scale.x * item.image.width / 243) * 0.8, y: item.scale.y / item.scale.y })
+		.position({ x: boundingBox.min.x + (item.image.width * dpiScale * 0.1 * item.scale.x), y: boundingBox.min.y })
+		.zIndex(healthBar.zIndex + 1)
+		.build();
+
+	const healthText = buildText()
+		.attachedTo(healthBar.id)
+		.layer("TEXT")
 		.locked(true)
 		.visible(item.visible)
-		.scale({ x: item.scale.x * item.image.width / 256, y: item.scale.y * item.image.height / 266 })
-		.layer("ATTACHMENT")
-		.disableHit(true)
-		.build();
-	const acText = buildText()
-		.position({ x: boundingBox.min.x, y: boundingBox.min.y })
 		.text({
 			plainText: hpStatus,
 			type: "PLAIN",
 			style: {
-				fillColor: hpStatus === "Dead" ? "white" : "black",
+				fillColor: "white",
 				fillOpacity: 1,
-				strokeColor: "red",
-				strokeOpacity: 0,
-				strokeWidth: 0,
+				strokeColor: "black",
+				strokeOpacity: 1,
+				strokeWidth: 1.3,
 				textAlign: "CENTER",
 				textAlignVertical: "MIDDLE",
 				fontFamily: "roboto",
-				fontSize: healthStatusImage.image.height * healthStatusImage.scale.y * dpiScale / 3,
+				fontSize: 10,
 				fontWeight: 400,
 				lineHeight: 1,
-				padding: 0
+				padding: 1.5
 			},
 			richText: [],
-			width: healthStatusImage.image.width * dpiScale * healthStatusImage.scale.x,
-			height: healthStatusImage.image.height * dpiScale * healthStatusImage.scale.y
+			width: healthBorder.image.width * dpiScale * healthBorder.scale.x,
+			height: healthBorder.image.height * dpiScale * healthBorder.scale.y
 		})
-		.attachedTo(healthStatusImage.id)
-		.layer("TEXT")
-		.locked(true)
-		.visible(item.visible)
+		.position({ x: boundingBox.min.x + (item.image.width * dpiScale * 0.1 * item.scale.x), y: boundingBox.min.y })
 		.build();
-	return [healthStatusImage, acText];
+	return [healthBar, healthBorder, healthText];
 };
 
 export const buildThpToken = async (item: Image, boundingBox: BoundingBox, thp: number, dpiScale: number) => {
@@ -209,7 +261,7 @@ export const buildConditionTokens = async (item: Image, boundingBox: BoundingBox
 				.visible(item.visible)
 				.scale({ x: item.scale.x * item.image.width / 256, y: item.scale.y * item.image.height / 266 })
 				.layer("ATTACHMENT")
-				.disableHit(true)
+				.disableHit(false)
 				.build()
 			);
 		}

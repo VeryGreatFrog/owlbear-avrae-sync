@@ -20,7 +20,7 @@ import tokenManager from "./managers/TokenManager";
 				Force a resync
 			</button>
 			<button type="button" @click="tokenManager.clear()">
-				Clear
+				Stop tracking
 			</button>
 		</div>
 	</section>

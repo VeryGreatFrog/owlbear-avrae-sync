@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 import type { BoundingBox, Image, Item, Shape } from "@owlbear-rodeo/sdk";
 import type { CombatantData } from "../socket";
 import OBR, { isImage } from "@owlbear-rodeo/sdk";
@@ -11,6 +12,8 @@ export default reactive({
 	combatantCache: {} as Record<string, CombatantData>,
 
 	async updateCombatants() {
+		room.lastUpdateMs = Date.now();
+
 		const response = await fetch(`/api/getInit/${room.channelID}`);
 		const combatants: Record<string, CombatantData> = await response.json();
 
@@ -48,31 +51,13 @@ export default reactive({
 				return Boolean(isPlainObject(metadata) && metadata.isHealth && a.attachedTo === item.id);
 			});
 
-			if (combatant.hp !== undefined || combatant.maxHp !== undefined) {
-				toAdd.push(...await buildHealthToken(item, boundingBox, [combatant.hp || 0, combatant.maxHp || 0], dpiScale));
+			if (combatant.hp !== undefined || combatant.maxHp !== undefined || combatant.thp !== undefined) {
+				toAdd.push(...await buildHealthToken(item, boundingBox, [combatant.hp || 0, combatant.maxHp || 0, combatant.thp || 0], dpiScale));
 				toDelete.push(...currentHealth.map(a => a.id));
 			}
 
-			if (this.combatantCache[combatant.name]?.hp && !combatant.hp || this.combatantCache[combatant.name]?.maxHp && !combatant.maxHp) {
+			if (this.combatantCache[combatant.name]?.hp && !combatant.hp || this.combatantCache[combatant.name]?.maxHp && !combatant.maxHp || this.combatantCache[combatant.name]?.thp && !combatant.thp) {
 				toDelete.push(...currentHealth.map(a => a.id));
-			}
-		};
-
-		const updateThp = async (item: Image, boundingBox: BoundingBox, combatant: CombatantData, dpiScale: number) => {
-			console.log("Updating thp");
-			console.log(combatant);
-			const currentThp = currentAttachments.filter((a) => {
-				const metadata = a.metadata[getPluginId("metadata")];
-				return Boolean(isPlainObject(metadata) && metadata.isThp && a.attachedTo === item.id);
-			});
-
-			if (combatant.thp !== undefined) {
-				toDelete.push(...currentThp.map(a => a.id));
-				toAdd.push(...await buildThpToken(item, boundingBox, combatant.thp, dpiScale));
-			}
-
-			if (this.combatantCache[combatant.name]?.thp && !combatant.thp) {
-				toDelete.push(...currentThp.map(a => a.id));
 			}
 		};
 
@@ -117,12 +102,12 @@ export default reactive({
 					const dpiScale = sceneDpi / (item.grid.dpi);
 					const boundingBox = await OBR.scene.items.getItemBounds([item.id]);
 
-					if (combatant.ac !== this.combatantCache[combatantName]?.ac)
-						await updateAC(item, boundingBox, combatant, dpiScale);
-					if (combatant.hp !== this.combatantCache[combatantName]?.hp || combatant.maxHp !== this.combatantCache[combatantName]?.maxHp)
+					// if (combatant.ac !== this.combatantCache[combatantName]?.ac)
+					// 	await updateAC(item, boundingBox, combatant, dpiScale);
+					if (combatant.hp !== this.combatantCache[combatantName]?.hp || combatant.maxHp !== this.combatantCache[combatantName]?.maxHp || combatant.thp !== this.combatantCache[combatantName]?.thp)
 						await updateHealth(item, boundingBox, combatant, dpiScale);
-					if (combatant.thp !== this.combatantCache[combatantName]?.thp)
-						await updateThp(item, boundingBox, combatant, dpiScale);
+					// if (combatant.thp !== this.combatantCache[combatantName]?.thp)
+					// 	await updateThp(item, boundingBox, combatant, dpiScale);
 					if (combatant.hpStatus !== this.combatantCache[combatantName]?.hpStatus)
 						await updateHealthStatus(item, boundingBox, combatant, dpiScale);
 					if (combatant.conditions !== this.combatantCache[combatantName]?.conditions)
@@ -151,10 +136,9 @@ export default reactive({
 			return Boolean(isPlainObject(metadata));
 		});
 		await OBR.scene.items.deleteItems(currentAttachments.map(a => a.id));
+		room.setChannel("", true);
 	},
 	runEffects() {
-		room.lastUpdateMs = Date.now();
-
 		this.updateCombatants();
 	}
 });
