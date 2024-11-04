@@ -23,9 +23,6 @@ export async function insertInit(channelId, messageId, newContent) {
     }
 }
 const getData = (combatant) => {
-    let isPlayer = false;
-    let isMonster = false;
-    let isGenericCombatant = false;
     let hpStatus;
     let hp;
     let thp;
@@ -41,7 +38,6 @@ const getData = (combatant) => {
     if (healthMatch && healthMatch.length >= 2)
         health = healthMatch[1];
     if (health.includes("HP")) {
-        isPlayer = true;
         if (health.includes("temp")) {
             const [current, temp] = health.replace("HP", "").replace("temp", "").split(",");
             hp = Number.parseInt(current.split("/")[0]) || 0;
@@ -55,11 +51,9 @@ const getData = (combatant) => {
         }
     }
     else if (health.includes("None")) {
-        isGenericCombatant = true;
         hpStatus = "None";
     }
     else {
-        isMonster = true;
         hpStatus = health;
     }
     const acMatch = combatant.match(/AC\s+(\d+)/);
@@ -81,9 +75,6 @@ const getData = (combatant) => {
     }
     return {
         name,
-        isPlayer,
-        isMonster,
-        isGenericCombatant,
         hpStatus,
         hp,
         maxHp,

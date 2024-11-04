@@ -2,7 +2,9 @@ import { Server } from "socket.io";
 let io;
 export const initSocket = (server) => {
     io = new Server(server);
-    io.on("connection", () => console.log("Socket connected"));
+    io.on("connection", () => {
+        console.log("Socket connected");
+    });
 };
 export const getIO = () => {
     if (!io) {
