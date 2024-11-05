@@ -255,3 +255,21 @@ export const buildConditionTokens = async (item: Image, boundingBox: BoundingBox
 	}
 	return [];
 };
+
+export const buildCurrentTurnToken = async (item: Image, boundingBox: BoundingBox, dpiScale: number) => {
+	const currentTurn = buildImage(
+		{ height: 256, width: 256, url: `${urlBase}/util/currentTurn.svg`, mime: "image/svg" },
+		{ dpi: item.grid.dpi, offset: { x: 128, y: 128 } }
+	)
+		.attachedTo(item.id)
+		.position({ x: boundingBox.min.x + (item.image.width * dpiScale) / 2, y: boundingBox.min.y - (item.grid.dpi / await OBR.scene.grid.getDpi() * 12) })
+		.metadata({ [getPluginId("metadata")]: { isCurrentTurn: true } })
+		.locked(true)
+		.visible(item.visible)
+		.scale({ x: item.scale.x * item.image.width / 256 * 0.4, y: item.scale.y / item.scale.y * 0.4 })
+		.layer("ATTACHMENT")
+		.disableHit(false)
+		.build();
+
+	return [currentTurn];
+};

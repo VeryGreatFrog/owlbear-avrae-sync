@@ -5,7 +5,7 @@ import OBR, { isImage } from "@owlbear-rodeo/sdk";
 import { reactive } from "vue";
 import { getPluginId, isPlainObject } from "../helper";
 import room from "./ChannelConnection";
-import { buildConditionTokens, buildHealthStatusToken, buildHealthToken } from "./TokenCreators";
+import { buildConditionTokens, buildCurrentTurnToken, buildHealthStatusToken, buildHealthToken } from "./TokenCreators";
 
 export default reactive({
 	combatantCache: {} as Record<string, CombatantData>,
@@ -81,6 +81,23 @@ export default reactive({
 			}
 		};
 
+		const updateCurrentTurn = async (item: Image, boundingBox: BoundingBox, combatant: CombatantData, dpiScale: number) => {
+			console.log("Updating current turn");
+			const currentTurn = currentAttachments.filter((a) => {
+				const metadata = a.metadata[getPluginId("metadata")];
+				return Boolean(isPlainObject(metadata) && metadata.isCurrentTurn && a.attachedTo === item.id);
+			});
+
+			if (combatant.isCurrentTurn !== undefined) {
+				toAdd.push(...await buildCurrentTurnToken(item, boundingBox, dpiScale));
+				toDelete.push(...currentTurn.map(a => a.id));
+			}
+
+			if (this.combatantCache[combatant.name]?.isCurrentTurn && !combatant.isCurrentTurn) {
+				toDelete.push(...currentTurn.map(a => a.id));
+			}
+		};
+
 		for (const combatantName in combatants) {
 			const combatant = combatants[combatantName];
 			for (const item of items) {
@@ -94,12 +111,13 @@ export default reactive({
 						await updateHealthStatus(item, boundingBox, combatant, dpiScale);
 					if (combatant.conditions !== this.combatantCache[combatantName]?.conditions)
 						await updateConditions(item, boundingBox, combatant);
+					if (combatant.isCurrentTurn !== this.combatantCache[combatantName]?.isCurrentTurn)
+						await updateCurrentTurn(item, boundingBox, combatant, dpiScale);
 				}
 			}
 		}
 
 		if (toAdd.length > 0) {
-			console.log(toAdd);
 			await OBR.scene.items.addItems(toAdd);
 		}
 

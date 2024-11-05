@@ -48,77 +48,6 @@ interface CombatantData {
 	isCurrentTurn?: boolean;
 }
 
-// eslint-disable-next-line unused-imports/no-unused-vars
-const getData = (combatant: string): CombatantData => {
-	console.log(combatant);
-	let hpStatus;
-	let hp;
-	let thp;
-	let maxHp;
-	let ac;
-	let conditions;
-
-	const nameMatch = combatant.match(/^#*\s*(?:\d+:\s*)?([^\s<]+(?:\s[^\s<]+)*)/);
-	let name = "";
-	if (nameMatch && nameMatch.length >= 2)
-		name = nameMatch[1].replace("- ", "");
-
-	let health = "";
-	const healthMatch = combatant.match(/<([^<>]+)>/);
-	if (healthMatch && healthMatch.length >= 2)
-		health = healthMatch[1];
-
-	if (health.includes("HP")) {
-		if (health.includes("temp")) {
-			const [current, temp] = health.replace("HP", "").replace("temp", "").split(",");
-
-			hp = Number.parseInt(current.split("/")[0]) || 0;
-			maxHp = Number.parseInt(current.split("/")[1]) || 0;
-			thp = Number.parseInt(temp);
-		}
-		else {
-			const current = health.replace("HP", "").replace("temp", "");
-			hp = Number.parseInt(current.split("/")[0]) || 0;
-			maxHp = Number.parseInt(current.split("/")[1]) || 0;
-		}
-	}
-	else if (health.includes("None")) {
-		hpStatus = "None";
-	}
-	else {
-		hpStatus = health;
-	}
-
-	const acMatch = combatant.match(/AC\s+(\d+)/);
-	if (acMatch && acMatch.length >= 2) {
-		ac = Number.parseInt(acMatch[1]);
-	}
-
-	let conditionMatch = null;
-	if (acMatch) {
-		conditionMatch = combatant.replace(`AC ${ac},`, "").match(/\((.*?)\)/);
-	}
-	else {
-		conditionMatch = combatant.match(/\((.*?)\)/);
-	}
-
-	if (conditionMatch) {
-		conditions = conditionMatch[1].toLowerCase();
-		if (conditions.includes("(hypnotic pattern")) {
-			conditions += "incapacitated";
-		}
-	}
-	return {
-		name,
-		hpStatus,
-		hp,
-		maxHp,
-		thp,
-		ac,
-		conditions
-	};
-};
-
 const getCombatants = (list: string): Record<string, CombatantData> => {
 	const byLine = list.split("\n");
 	const combatantData: Record<string, CombatantData> = {};
@@ -149,7 +78,7 @@ const getCombatants = (list: string): Record<string, CombatantData> => {
 		let maxHp;
 		let ac;
 		let conditions;
-		const isCurrentTurn = isGroupTurn || combatant.startsWith("#");
+		const isCurrentTurn = (isGroupTurn || combatant.startsWith("#")) || undefined;
 
 		const nameMatch = combatant.match(/^#*\s*(?:\d+:\s*)?([^\s<]+(?:\s[^\s<]+)*)/);
 		let name = "";
