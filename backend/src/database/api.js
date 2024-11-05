@@ -22,6 +22,7 @@ export async function insertInit(channelId, messageId, newContent) {
         return null;
     }
 }
+// eslint-disable-next-line unused-imports/no-unused-vars
 const getData = (combatant) => {
     console.log(combatant);
     let hpStatus;
@@ -84,7 +85,92 @@ const getData = (combatant) => {
         conditions
     };
 };
-const extractCombatants = /(.*)(?=\n(?!\s*-\s)|$)|(?<=-\s)(.*)(?=\n|$)/g;
+const getCombatants = (list) => {
+    const byLine = list.split("\n");
+    const combatantData = {};
+    let isGroupTurn = false;
+    for (let possibleCombatant of byLine) {
+        possibleCombatant = possibleCombatant.trimStart();
+        // All real combatants include <4/10> or <Healthy> or <None>. Names of group do not have it. It is possible to name a group with a < in it but that aside for now.
+        // This means that these are groups
+        if (!possibleCombatant.includes("<")) {
+            // It is the current group's turn
+            if (possibleCombatant.startsWith("#")) {
+                isGroupTurn = true;
+            }
+            continue;
+        }
+        // We were in a group, but now no longer.
+        if (isGroupTurn && !possibleCombatant.startsWith("-")) {
+            isGroupTurn = false;
+        }
+        // Otherwise, they are real combatants.
+        const combatant = possibleCombatant;
+        let hpStatus;
+        let hp;
+        let thp;
+        let maxHp;
+        let ac;
+        let conditions;
+        const isCurrentTurn = isGroupTurn || combatant.startsWith("#");
+        const nameMatch = combatant.match(/^#*\s*(?:\d+:\s*)?([^\s<]+(?:\s[^\s<]+)*)/);
+        let name = "";
+        if (nameMatch && nameMatch.length >= 2)
+            name = nameMatch[1].replace("- ", "");
+        let health = "";
+        const healthMatch = combatant.match(/<([^<>]+)>/);
+        if (healthMatch && healthMatch.length >= 2)
+            health = healthMatch[1];
+        if (health.includes("HP")) {
+            if (health.includes("temp")) {
+                const [current, temp] = health.replace("HP", "").replace("temp", "").split(",");
+                hp = Number.parseInt(current.split("/")[0]) || 0;
+                maxHp = Number.parseInt(current.split("/")[1]) || 0;
+                thp = Number.parseInt(temp);
+            }
+            else {
+                const current = health.replace("HP", "").replace("temp", "");
+                hp = Number.parseInt(current.split("/")[0]) || 0;
+                maxHp = Number.parseInt(current.split("/")[1]) || 0;
+            }
+        }
+        else if (health.includes("None")) {
+            hpStatus = "None";
+        }
+        else {
+            hpStatus = health;
+        }
+        const acMatch = combatant.match(/AC\s+(\d+)/);
+        if (acMatch && acMatch.length >= 2) {
+            ac = Number.parseInt(acMatch[1]);
+        }
+        let conditionMatch = null;
+        if (acMatch) {
+            conditionMatch = combatant.replace(`AC ${ac},`, "").match(/\((.*?)\)/);
+        }
+        else {
+            conditionMatch = combatant.match(/\((.*?)\)/);
+        }
+        if (conditionMatch) {
+            conditions = conditionMatch[1].toLowerCase();
+            if (conditions.includes("(hypnotic pattern")) {
+                conditions += "incapacitated";
+            }
+        }
+        combatantData[name] = {
+            name,
+            hpStatus,
+            hp,
+            maxHp,
+            thp,
+            ac,
+            conditions,
+            isCurrentTurn
+        };
+    }
+    console.log(combatantData);
+    return combatantData;
+};
 // @ts-expect-error Shut up
 app.get("/api/getInit/:id", async (req, res) => {
     try {
@@ -92,13 +178,7 @@ app.get("/api/getInit/:id", async (req, res) => {
         if (!data)
             return res.json({ error: "No initiative for that channel found" });
         const list = data.content.split("===============================")[1];
-        const matches = list.match(extractCombatants)?.filter(v => v);
-        const returnData = {};
-        for (const match of matches || []) {
-            const d = getData(match);
-            returnData[d.name] = d;
-        }
-        return res.json(returnData);
+        return res.json(getCombatants(list));
     }
     catch (e) {
         console.log(e);
