@@ -253,7 +253,7 @@ export const buildConditionTokens = async (item: Image, boundingBox: BoundingBox
 			);
 		}
 	}
-	return [];
+	return images;
 };
 
 export const buildCurrentTurnToken = async (item: Image, boundingBox: BoundingBox, dpiScale: number) => {
@@ -268,7 +268,7 @@ export const buildCurrentTurnToken = async (item: Image, boundingBox: BoundingBo
 		.visible(item.visible)
 		.scale({ x: item.scale.x * item.image.width / 256 * 0.4, y: item.scale.y / item.scale.y * 0.4 })
 		.layer("ATTACHMENT")
-		.disableHit(false)
+		.disableHit(true)
 		.build();
 
 	return [currentTurn];
