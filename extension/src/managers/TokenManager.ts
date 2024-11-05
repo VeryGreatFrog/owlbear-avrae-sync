@@ -5,7 +5,7 @@ import OBR, { isImage } from "@owlbear-rodeo/sdk";
 import { reactive } from "vue";
 import { getPluginId, isPlainObject } from "../helper";
 import room from "./ChannelConnection";
-import { buildAcToken, buildConditionTokens, buildHealthStatusToken, buildHealthToken } from "./TokenCreators";
+import { buildConditionTokens, buildHealthStatusToken, buildHealthToken } from "./TokenCreators";
 
 export default reactive({
 	combatantCache: {} as Record<string, CombatantData>,
@@ -15,7 +15,7 @@ export default reactive({
 
 		const response = await fetch(`/api/getInit/${room.channelID}`);
 		const combatants: Record<string, CombatantData> = await response.json();
-
+		console.log(combatants);
 		const sceneDpi = await OBR.scene.grid.getDpi();
 		console.log("Requested to update");
 		const currentAttachments = await OBR.scene.items.getItems<Shape>((item) => {
@@ -99,6 +99,7 @@ export default reactive({
 		}
 
 		if (toAdd.length > 0) {
+			console.log(toAdd);
 			await OBR.scene.items.addItems(toAdd);
 		}
 

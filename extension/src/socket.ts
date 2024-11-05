@@ -18,6 +18,7 @@ export interface CombatantData {
 
 	// Anyone
 	conditions?: string;
+	isCurrentTurn?: string;
 }
 
 socket.on("initUpdate", async (channelId) => {
