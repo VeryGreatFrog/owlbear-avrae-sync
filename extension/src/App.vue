@@ -20,7 +20,10 @@ import tokenManager from "./managers/TokenManager";
 				Force a resync
 			</button>
 			<button type="button" @click="tokenManager.clear()">
-				Stop tracking
+				Clear
+			</button>
+			<button type="button" @click="tokenManager.clear(true)">
+				Clear & Stop
 			</button>
 		</div>
 	</section>
@@ -29,5 +32,10 @@ import tokenManager from "./managers/TokenManager";
 <style scoped>
 	h2 {
 		border-bottom: 2px solid;
+	}
+
+	.buttons {
+		display: grid;
+		gap: 1rem
 	}
 </style>

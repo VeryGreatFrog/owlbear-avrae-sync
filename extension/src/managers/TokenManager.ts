@@ -15,7 +15,7 @@ export default reactive({
 
 		const response = await fetch(`/api/getInit/${room.channelID}`);
 		const combatants: Record<string, CombatantData> = await response.json();
-		console.log(combatants);
+		console.log(JSON.stringify(combatants));
 		const sceneDpi = await OBR.scene.grid.getDpi();
 		console.log("Requested to update");
 		const currentAttachments = await OBR.scene.items.getItems<Shape>((item) => {
@@ -83,6 +83,7 @@ export default reactive({
 
 		const updateCurrentTurn = async (item: Image, boundingBox: BoundingBox, combatant: CombatantData) => {
 			console.log("Updating current turn");
+
 			const currentTurn = currentAttachments.filter((a) => {
 				const metadata = a.metadata[getPluginId("metadata")];
 				return Boolean(isPlainObject(metadata) && metadata.isCurrentTurn && a.attachedTo === item.id);
@@ -93,7 +94,7 @@ export default reactive({
 				toDelete.push(...currentTurn.map(a => a.id));
 			}
 
-			if (this.combatantCache[combatant.name]?.isCurrentTurn && !combatant.isCurrentTurn) {
+			if (!combatant.hasOwnProperty("isCurrentTurn")) {
 				toDelete.push(...currentTurn.map(a => a.id));
 			}
 		};
@@ -131,13 +132,14 @@ export default reactive({
 		this.combatantCache = {};
 		this.updateCombatants();
 	},
-	async clear() {
+	async clear(stop?: boolean) {
 		const currentAttachments = await OBR.scene.items.getItems<Shape>((item) => {
 			const metadata = item.metadata[getPluginId("metadata")];
 			return Boolean(isPlainObject(metadata));
 		});
 		await OBR.scene.items.deleteItems(currentAttachments.map(a => a.id));
-		room.setChannel("", true);
+		if (stop)
+			room.setChannel("", true);
 	},
 	runEffects() {
 		this.updateCombatants();

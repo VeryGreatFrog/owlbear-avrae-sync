@@ -35,6 +35,7 @@ export default antfu(
 			"ts/no-throw-literal": "off",
 			"ts/no-misused-promises": "off",
 			"node/prefer-global/process": "off",
+			"no-prototype-builtins": "off"
 		},
 	},
 );

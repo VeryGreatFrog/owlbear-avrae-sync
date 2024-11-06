@@ -10,3 +10,7 @@ export function isPlainObject(
 		item !== null && typeof item === "object" && item.constructor === Object
 	);
 }
+
+export function capitalizeFirstLetter(string: string) {
+	return string.charAt(0).toUpperCase() + string.slice(1);
+}

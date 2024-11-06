@@ -1,56 +1,9 @@
-import type { BoundingBox, Image, Vector2 } from "@owlbear-rodeo/sdk";
+import type { BoundingBox, Image } from "@owlbear-rodeo/sdk";
 import OBR, { buildImage, buildText } from "@owlbear-rodeo/sdk";
 
-import { getPluginId } from "../helper";
+import { capitalizeFirstLetter, getPluginId } from "../helper";
 
 const urlBase = import.meta.env.DEV ? "http://localhost:5173" : "https://owlbear-avrae-sync.com";
-
-export const buildGenericTokenWithText = async (parentOptions: { item: Image; boundingBox: BoundingBox; dpiScale: number; gridSize: Vector2 }, tokenOptions: { imageName: string; tokenText: string; position: Vector2 }) => { console.log(parentOptions, tokenOptions); };
-
-export const buildAcToken = async (item: Image, boundingBox: BoundingBox, ac: number, dpiScale: number) => {
-	const acImage = buildImage(
-		{ height: 256, width: 256, url: `${urlBase}/armorClass.svg`, mime: "image/svg" },
-		{ dpi: item.grid.dpi, offset: { x: 0, y: 10 } }
-	)
-		.attachedTo(item.id)
-		.position({ x: boundingBox.min.x, y: boundingBox.min.y })
-		.metadata({ [getPluginId("metadata")]: { isAc: true } })
-		.locked(true)
-		.visible(item.visible)
-		.scale({ x: item.scale.x * item.image.width / 256 * 0.1, y: item.scale.y / item.scale.y * 0.1 })
-		.layer("ATTACHMENT")
-		.disableHit(false)
-		.build();
-	const acText = buildText()
-		.position({ x: boundingBox.min.x, y: boundingBox.min.y })
-		.text({
-			plainText: ac.toString(),
-			type: "PLAIN",
-			style: {
-				fillColor: "white",
-				fillOpacity: 1,
-				strokeColor: "black",
-				strokeOpacity: 1,
-				strokeWidth: 1,
-				textAlign: "CENTER",
-				textAlignVertical: "MIDDLE",
-				fontFamily: "roboto",
-				fontSize: 7,
-				fontWeight: 400,
-				lineHeight: 1,
-				padding: 0
-			},
-			richText: [],
-			width: acImage.image.width * dpiScale * acImage.scale.x,
-			height: acImage.image.height * dpiScale * acImage.scale.y
-		})
-		.attachedTo(acImage.id)
-		.layer("TEXT")
-		.locked(true)
-		.visible(acImage.visible)
-		.build();
-	return [acImage, acText];
-};
 
 export const buildHealthToken = async (item: Image, boundingBox: BoundingBox, hp: [number, number, number], dpiScale: number) => {
 	const scale = item.scale.x;
@@ -72,6 +25,7 @@ export const buildHealthToken = async (item: Image, boundingBox: BoundingBox, hp
 		dpi: item.grid.dpi,
 		offset: { x: 0, y: 0 }
 	})
+		.name(`${item.text.plainText}: Healthbar`)
 		.attachedTo(item.id)
 		.metadata({ [getPluginId("metadata")]: { isHealth: true } })
 		.visible(item.visible)
@@ -91,6 +45,7 @@ export const buildHealthToken = async (item: Image, boundingBox: BoundingBox, hp
 		dpi: item.grid.dpi,
 		offset: { x: 0, y: 0 }
 	})
+		.name(`${item.text.plainText}: Healthbar Border`)
 		.attachedTo(item.id)
 		.metadata({ [getPluginId("metadata")]: { isHealth: true } })
 		.visible(item.visible)
@@ -153,6 +108,7 @@ export const buildHealthStatusToken = async (item: Image, boundingBox: BoundingB
 		dpi: item.grid.dpi,
 		offset: { x: 0, y: 0 }
 	})
+		.name(`${item.text.plainText}: ${hpStatus} Bar`)
 		.attachedTo(item.id)
 		.metadata({ [getPluginId("metadata")]: { isHealthStatus: true } })
 		.visible(item.visible)
@@ -172,6 +128,7 @@ export const buildHealthStatusToken = async (item: Image, boundingBox: BoundingB
 		dpi: item.grid.dpi,
 		offset: { x: 0, y: 0 }
 	})
+		.name(`${item.text.plainText}: Healthbar Border`)
 		.attachedTo(item.id)
 		.metadata({ [getPluginId("metadata")]: { isHealthStatus: true } })
 		.visible(item.visible)
@@ -241,6 +198,7 @@ export const buildConditionTokens = async (item: Image, boundingBox: BoundingBox
 				{ height: imageSize, width: imageSize, url: `${urlBase}/conditions/${token}.svg`, mime: "image/svg" },
 				{ dpi: item.grid.dpi, offset: { x: 0 - imageSize * spacesRight, y: imageSize + imageSize * spacesUp } }
 			)
+				.name(`${item.text.plainText}: ${capitalizeFirstLetter(token)}`)
 				.attachedTo(item.id)
 				.position({ x: boundingBox.min.x, y: boundingBox.max.y })
 				.metadata({ [getPluginId("metadata")]: { isCondition: true } })
@@ -261,6 +219,7 @@ export const buildCurrentTurnToken = async (item: Image, boundingBox: BoundingBo
 		{ height: 256, width: 256, url: `${urlBase}/util/currentTurn.svg`, mime: "image/svg" },
 		{ dpi: item.grid.dpi, offset: { x: 128, y: 256 } }
 	)
+		.name(`${item.text.plainText}: Current Turn Marker`)
 		.attachedTo(item.id)
 		.position({ x: boundingBox.max.x - (boundingBox.max.x - boundingBox.min.x) / 2, y: boundingBox.min.y })
 		.metadata({ [getPluginId("metadata")]: { isCurrentTurn: true } })
