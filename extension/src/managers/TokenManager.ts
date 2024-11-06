@@ -81,7 +81,7 @@ export default reactive({
 			}
 		};
 
-		const updateCurrentTurn = async (item: Image, boundingBox: BoundingBox, combatant: CombatantData, dpiScale: number) => {
+		const updateCurrentTurn = async (item: Image, boundingBox: BoundingBox, combatant: CombatantData) => {
 			console.log("Updating current turn");
 			const currentTurn = currentAttachments.filter((a) => {
 				const metadata = a.metadata[getPluginId("metadata")];
@@ -89,7 +89,7 @@ export default reactive({
 			});
 
 			if (combatant.isCurrentTurn !== undefined) {
-				toAdd.push(...await buildCurrentTurnToken(item, boundingBox, dpiScale));
+				toAdd.push(...await buildCurrentTurnToken(item, boundingBox));
 				toDelete.push(...currentTurn.map(a => a.id));
 			}
 
@@ -112,7 +112,7 @@ export default reactive({
 					if (combatant.conditions !== this.combatantCache[combatantName]?.conditions)
 						await updateConditions(item, boundingBox, combatant);
 					if (combatant.isCurrentTurn !== this.combatantCache[combatantName]?.isCurrentTurn)
-						await updateCurrentTurn(item, boundingBox, combatant, dpiScale);
+						await updateCurrentTurn(item, boundingBox, combatant);
 				}
 			}
 		}

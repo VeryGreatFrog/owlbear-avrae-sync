@@ -256,17 +256,17 @@ export const buildConditionTokens = async (item: Image, boundingBox: BoundingBox
 	return images;
 };
 
-export const buildCurrentTurnToken = async (item: Image, boundingBox: BoundingBox, dpiScale: number) => {
+export const buildCurrentTurnToken = async (item: Image, boundingBox: BoundingBox) => {
 	const currentTurn = buildImage(
 		{ height: 256, width: 256, url: `${urlBase}/util/currentTurn.svg`, mime: "image/svg" },
-		{ dpi: item.grid.dpi, offset: { x: 128, y: 128 } }
+		{ dpi: item.grid.dpi, offset: { x: 128, y: 256 } }
 	)
 		.attachedTo(item.id)
-		.position({ x: boundingBox.min.x + (item.image.width * dpiScale) / 2, y: boundingBox.min.y - (item.grid.dpi / await OBR.scene.grid.getDpi() * 12) })
+		.position({ x: boundingBox.max.x - (boundingBox.max.x - boundingBox.min.x) / 2, y: boundingBox.min.y })
 		.metadata({ [getPluginId("metadata")]: { isCurrentTurn: true } })
 		.locked(true)
 		.visible(item.visible)
-		.scale({ x: item.scale.x * item.image.width / 256 * 0.4, y: item.scale.y / item.scale.y * 0.4 })
+		.scale({ x: (item.grid.dpi / await OBR.scene.grid.getDpi()) * 0.15, y: (item.grid.dpi / await OBR.scene.grid.getDpi()) * 0.15 })
 		.layer("ATTACHMENT")
 		.disableHit(true)
 		.build();
