@@ -52,23 +52,16 @@ const getCombatants = (list: string): Record<string, CombatantData> => {
 	const byLine = list.split("\n");
 	const combatantData: Record<string, CombatantData> = {};
 
-	let isGroupTurn = false;
+	let currentGroup = "";
 	for (let possibleCombatant of byLine) {
 		possibleCombatant = possibleCombatant.trimStart();
 		// All real combatants include <4/10> or <Healthy> or <None>. Names of group do not have it. It is possible to name a group with a < in it but that aside for now.
 		// This means that these are groups
 		if (!possibleCombatant.includes("<")) {
-			// It is the current group's turn
-			if (possibleCombatant.startsWith("#")) {
-				isGroupTurn = true;
-			}
+			currentGroup = possibleCombatant;
 			continue;
 		}
 
-		// We were in a group, but now no longer.
-		if (isGroupTurn && !possibleCombatant.startsWith("-")) {
-			isGroupTurn = false;
-		}
 		// Otherwise, they are real combatants.
 		const combatant = possibleCombatant;
 
@@ -78,13 +71,14 @@ const getCombatants = (list: string): Record<string, CombatantData> => {
 		let maxHp;
 		let ac;
 		let conditions;
-		const isCurrentTurn = (isGroupTurn || combatant.startsWith("#")) || undefined;
+		const isCurrentTurn = (currentGroup.includes("#") || combatant.startsWith("#")) || undefined;
 
 		const nameMatch = combatant.match(/^#*\s*(?:\d+:\s*)?([^\s<]+(?:\s[^\s<]+)*)/);
 		let name = "";
 		if (nameMatch && nameMatch.length >= 2)
 			name = nameMatch[1].replace("- ", "");
 
+		// console.log(name, isGroupTurn, isCurrentTurn);
 		let health = "";
 		const healthMatch = combatant.match(/<([^<>]+)>/);
 		if (healthMatch && healthMatch.length >= 2)
@@ -141,7 +135,6 @@ const getCombatants = (list: string): Record<string, CombatantData> => {
 			isCurrentTurn
 		};
 	}
-	console.log(combatantData);
 	return combatantData;
 };
 

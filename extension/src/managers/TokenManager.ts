@@ -15,9 +15,8 @@ export default reactive({
 
 		const response = await fetch(`/api/getInit/${room.channelID}`);
 		const combatants: Record<string, CombatantData> = await response.json();
-		console.log(JSON.stringify(combatants));
+		console.log(combatants);
 		const sceneDpi = await OBR.scene.grid.getDpi();
-		console.log("Requested to update");
 		const currentAttachments = await OBR.scene.items.getItems<Shape>((item) => {
 			const metadata = item.metadata[getPluginId("metadata")];
 			return Boolean(isPlainObject(metadata));
@@ -81,6 +80,7 @@ export default reactive({
 			}
 		};
 
+		const validTurnCombatants: string[] = [];
 		const updateCurrentTurn = async (item: Image, boundingBox: BoundingBox, combatant: CombatantData) => {
 			console.log("Updating current turn");
 
@@ -114,9 +114,17 @@ export default reactive({
 						await updateConditions(item, boundingBox, combatant);
 					if (combatant.isCurrentTurn !== this.combatantCache[combatantName]?.isCurrentTurn)
 						await updateCurrentTurn(item, boundingBox, combatant);
+					if (combatant.isCurrentTurn) {
+						validTurnCombatants.push(item.id);
+					}
 				}
 			}
 		}
+
+		toDelete.push(...currentAttachments.filter((a) => {
+			const metadata = a.metadata[getPluginId("metadata")];
+			return Boolean(isPlainObject(metadata) && metadata.isCurrentTurn && !validTurnCombatants.includes(a.attachedTo || ""));
+		}).map(x => x.id));
 
 		if (toAdd.length > 0) {
 			await OBR.scene.items.addItems(toAdd);
