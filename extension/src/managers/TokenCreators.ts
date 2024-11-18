@@ -102,7 +102,7 @@ export const buildHealthStatusToken = async (item: Image, boundingBox: BoundingB
 	const healthBar = buildImage({
 		height: 22,
 		width: 243,
-		url: `${urlBase}/health/${hpStatus}.png`,
+		url: `${urlBase}/health/${hpStatus}WithBorder.png`,
 		mime: "image/png"
 	}, {
 		dpi: item.grid.dpi,
@@ -117,27 +117,6 @@ export const buildHealthStatusToken = async (item: Image, boundingBox: BoundingB
 		.layer("ATTACHMENT")
 		.scale({ x: (item.scale.x * item.image.width / 243) * 0.8, y: (item.grid.dpi / await OBR.scene.grid.getDpi()) * (0.5 * imgScale) })
 		.position({ x: boundingBox.min.x + (item.image.width * dpiScale * 0.1 * item.scale.x), y: boundingBox.min.y })
-		.build();
-
-	const healthBorder = buildImage({
-		height: 22,
-		width: 243,
-		url: `${urlBase}/health/border.png`,
-		mime: "image/png"
-	}, {
-		dpi: item.grid.dpi,
-		offset: { x: 0, y: 0 }
-	})
-		.name(`${item.text.plainText}: Healthbar Border`)
-		.attachedTo(item.id)
-		.metadata({ [getPluginId("metadata")]: { isHealthStatus: true } })
-		.visible(item.visible)
-		.locked(true)
-		.disableHit(false)
-		.layer("ATTACHMENT")
-		.scale({ x: (item.scale.x * item.image.width / 243) * 0.8, y: (item.grid.dpi / await OBR.scene.grid.getDpi()) * (0.5 * imgScale) })
-		.position({ x: boundingBox.min.x + (item.image.width * dpiScale * 0.1 * item.scale.x), y: boundingBox.min.y })
-		.zIndex(healthBar.zIndex + 1)
 		.build();
 
 	const healthText = buildText()
@@ -164,12 +143,12 @@ export const buildHealthStatusToken = async (item: Image, boundingBox: BoundingB
 				padding: 0
 			},
 			richText: [],
-			width: healthBorder.image.width * dpiScale * healthBorder.scale.x,
-			height: healthBorder.image.height * dpiScale * healthBorder.scale.y
+			width: healthBar.image.width * dpiScale * healthBar.scale.x,
+			height: healthBar.image.height * dpiScale * healthBar.scale.y
 		})
 		.position({ x: boundingBox.min.x + (item.image.width * dpiScale * 0.1 * item.scale.x), y: boundingBox.min.y - (scale * 0.5) })
 		.build();
-	return [healthBar, healthBorder, healthText];
+	return [healthBar, healthText];
 };
 
 const conditionTokens = ["blessed", "blinded", "charmed", "deafened", "frightened", "grappled", "incapacitated", "invisible", "paralyzed", "petrified", "poisoned", "prone", "restrained", "stunned", "unconscious"];
