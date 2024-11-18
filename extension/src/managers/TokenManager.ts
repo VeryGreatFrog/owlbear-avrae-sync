@@ -12,10 +12,10 @@ export default reactive({
 
 	async updateCombatants() {
 		room.lastUpdateMs = Date.now();
-
+		console.log(await OBR.party.getPlayers());
 		const response = await fetch(`/api/getInit/${room.channelID}`);
 		const combatants: Record<string, CombatantData> = await response.json();
-		console.log(combatants);
+
 		const sceneDpi = await OBR.scene.grid.getDpi();
 		const currentAttachments = await OBR.scene.items.getItems<Shape>((item) => {
 			const metadata = item.metadata[getPluginId("metadata")];
@@ -30,7 +30,6 @@ export default reactive({
 		const toDelete: string[] = [];
 
 		const updateHealth = async (item: Image, boundingBox: BoundingBox, combatant: CombatantData, dpiScale: number) => {
-			console.log("Updating health");
 			const currentHealth = currentAttachments.filter((a) => {
 				const metadata = a.metadata[getPluginId("metadata")];
 				return Boolean(isPlainObject(metadata) && metadata.isHealth && a.attachedTo === item.id);
@@ -47,7 +46,6 @@ export default reactive({
 		};
 
 		const updateHealthStatus = async (item: Image, boundingBox: BoundingBox, combatant: CombatantData, dpiScale: number) => {
-			console.log("Updating Health Status");
 			const currentHealthStatuses = currentAttachments.filter((a) => {
 				const metadata = a.metadata[getPluginId("metadata")];
 				return Boolean(isPlainObject(metadata) && metadata.isHealthStatus && a.attachedTo === item.id);
@@ -64,7 +62,6 @@ export default reactive({
 		};
 
 		const updateConditions = async (item: Image, boundingBox: BoundingBox, combatant: CombatantData) => {
-			console.log("Updating Conditions Status");
 			const currentConditions = currentAttachments.filter((a) => {
 				const metadata = a.metadata[getPluginId("metadata")];
 				return Boolean(isPlainObject(metadata) && metadata.isCondition && a.attachedTo === item.id);
@@ -82,8 +79,6 @@ export default reactive({
 
 		const validTurnCombatants: string[] = [];
 		const updateCurrentTurn = async (item: Image, boundingBox: BoundingBox, combatant: CombatantData) => {
-			console.log("Updating current turn");
-
 			const currentTurn = currentAttachments.filter((a) => {
 				const metadata = a.metadata[getPluginId("metadata")];
 				return Boolean(isPlainObject(metadata) && metadata.isCurrentTurn && a.attachedTo === item.id);
@@ -99,9 +94,13 @@ export default reactive({
 			}
 		};
 
+		const selectedIds = [...await OBR.player.getSelection() || [], ...(await OBR.party.getPlayers()).map(p => p.selection).flat()];
 		for (const combatantName in combatants) {
 			const combatant = combatants[combatantName];
 			for (const item of items) {
+				if (selectedIds.includes(item.id))
+					continue;
+
 				if (item.text.plainText.toLowerCase().replaceAll(" ", "") === combatantName.toLowerCase().replaceAll(" ", "")) {
 					const dpiScale = sceneDpi / (item.grid.dpi);
 					const boundingBox = await OBR.scene.items.getItemBounds([item.id]);
