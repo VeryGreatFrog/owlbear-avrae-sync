@@ -39,7 +39,7 @@ app.use(rateLimit({
     windowMs: 1000, // 1 second
     max: 100 // limit each IP to 100/1000 requests per windowMs
 }));
-app.use(cors({ origin: ["http://localhost", "'self'", "https://www.owlbear.rodeo"] }));
+app.use(cors({ origin: ["*"] }));
 app.use(compression());
 // ERROR HANDLING
 function errorHandler(err, req, res, _next) {
