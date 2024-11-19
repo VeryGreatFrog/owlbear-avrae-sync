@@ -36,3 +36,4 @@ export { client };
 app.get("/api/*", (_err, _req, res, _next) => res.status(404).json({ error: "Path not found." }));
 // @ts-expect-error Idk whats wrong
 app.get("/*", (_err, _req, res, _next) => res.status(404).json({ error: "Path not found." }));
+console.log(true);
