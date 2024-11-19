@@ -27,7 +27,6 @@ app.use(helmet({
             "font-src": ["'self'", "data: https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
             "connect-src": ["'self'", "https://discord.com", "*.google-analytics.com", "https://cdn.jsdelivr.net"],
             "worker-src": ["'self'", "blob:"],
-            "frame-ancestors": ["'self'", "https://www.owlbear.rodeo"]
         },
         useDefaults: true
     },
@@ -40,7 +39,7 @@ app.use(rateLimit({
     windowMs: 1000, // 1 second
     max: 100 // limit each IP to 100/1000 requests per windowMs
 }));
-app.use(cors());
+app.use(cors({ origin: ["http://localhost", "'self'", "https://www.owlbear.rodeo"] }));
 app.use(compression());
 // ERROR HANDLING
 function errorHandler(err, req, res, _next) {
