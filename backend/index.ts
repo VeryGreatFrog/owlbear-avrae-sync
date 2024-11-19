@@ -4,7 +4,6 @@ import http from "node:http";
 import path from "node:path";
 import dotenv from "dotenv";
 import express from "express";
-import { Server } from "socket.io";
 import { app } from "./src/app/app.js";
 
 import { initSocket } from "./src/app/socket.js";
@@ -48,3 +47,5 @@ export { client };
 app.get("/api/*", (_err: Error, _req: Request, res: Response, _next: NextFunction) => res.status(404).json({ error: "Path not found." }));
 // @ts-expect-error Idk whats wrong
 app.get("/*", (_err: Error, _req: Request, res: Response, _next: NextFunction) => res.status(404).json({ error: "Path not found." }));
+
+console.log(true);
