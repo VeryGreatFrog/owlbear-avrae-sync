@@ -22,7 +22,7 @@ export interface CombatantData {
 }
 
 socket.on("initUpdate", async (channelId) => {
-	if (channelId === room.channelID) {
+	if (channelId === room.channelId) {
 		tokenManager.runEffects();
 	}
 });

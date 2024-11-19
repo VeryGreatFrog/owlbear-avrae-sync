@@ -6,10 +6,12 @@ import dotenv from "dotenv";
 import express from "express";
 import { Server } from "socket.io";
 import { app } from "./src/app/app.js";
-import { initSocket } from "./src/app/socket.js";
-import { startDatabase } from "./src/database/database.js";
 
-import discord from "./src/discord-bot/client.js";
+import { initSocket } from "./src/app/socket.js";
+
+import { startDatabase } from "./src/database/database.js";
+// this must come first
+import client from "./src/discord-bot/client.js";
 
 // Load middleware
 import "./src/app/middleware.js";
@@ -38,8 +40,9 @@ httpServer.listen(Number.parseInt(process.env.PORT ?? "3000"), () => {
 
 initSocket(httpServer);
 // log in with discord
-discord.login(process.env.DISCORD_BOT_TOKEN!).catch(() => console.error("Failed to connect to discord bot"));
+client.login(process.env.DISCORD_BOT_TOKEN!).catch(() => console.error("Failed to connect to discord bot"));
 
+export { client };
 // Instantiate all other routes as bad
 // @ts-expect-error Idk whats wrong
 app.get("/api/*", (_err: Error, _req: Request, res: Response, _next: NextFunction) => res.status(404).json({ error: "Path not found." }));

@@ -3,10 +3,15 @@ import antfu from "@antfu/eslint-config";
 export default antfu(
 	// antfu cionfig inbuild settings
 	{
-		ignores: ["dist", "dist/**", "node_modules", "node_modules/**", "staticData/**/*.json"],
+		ignores: ["dist", "dist/**", "node_modules", "node_modules/**"],
+		vue: true,
+		formatters: {
+			css: true,
+			html: true,
+		},
 		typescript: {
 			tsconfigPath: ["tsconfig.json"],
-			filesTypeAware: ["**\/*.{ts}"],
+			filesTypeAware: ["**\/*.{ts,vue}"],
 		},
 		// stylistic eslint plugin
 		stylistic: {

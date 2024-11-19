@@ -13,7 +13,7 @@ export default reactive({
 	async updateCombatants() {
 		room.lastUpdateMs = Date.now();
 		console.log(await OBR.party.getPlayers());
-		const response = await fetch(`/api/getInit/${room.channelID}`);
+		const response = await fetch(`/api/getInit/${room.channelId}`);
 		const combatants: Record<string, CombatantData> = await response.json();
 
 		const sceneDpi = await OBR.scene.grid.getDpi();

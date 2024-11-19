@@ -6,8 +6,7 @@ import room from "./managers/ChannelConnection.ts";
 import "./style.css";
 import "./socket.ts";
 
-OBR.onReady(() => {
+OBR.onReady(async () => {
+	await room.init();
 	createApp(App).mount("#app");
-
-	room.init();
 });
