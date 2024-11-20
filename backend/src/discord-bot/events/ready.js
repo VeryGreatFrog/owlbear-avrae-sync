@@ -58,7 +58,6 @@ export default {
                 }
             }
             removeEmptyKeys(result);
-            console.log("Done!");
             return {
                 metadata: {
                     guildName: guild.name
