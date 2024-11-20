@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename);
 const client = new Client({ partials: [Partials.Message], intents: [GatewayIntentBits.Guilds, IntentsBitField.Flags.GuildMessages] });
 export default client;
 const eventsPath = path.join(__dirname, "events");
-const eventFiles = fs.readdirSync(eventsPath).filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith(".ts") || file.endsWith(".js"));
 for (const file of eventFiles) {
     const filePath = path.join(eventsPath, file);
     const eventModule = await import(`file://${filePath}`);
