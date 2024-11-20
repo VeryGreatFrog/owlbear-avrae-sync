@@ -83,6 +83,8 @@ socket.on("updateGuild", async (serverId) => {
 		await updateGuild(false, false)
 	}
 })
+
+isLoadingGuild.value = false
 </script>
 
 <template>

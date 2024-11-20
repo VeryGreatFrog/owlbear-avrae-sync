@@ -1,7 +1,6 @@
 import type { Collection, Db } from "mongodb";
 
 import type { initData } from "./api.js";
-import { MessageFlags } from "discord.js";
 import { MongoClient, ServerApiVersion } from "mongodb";
 import { isMessagePinned } from "../discord-bot/events/ready.js";
 // Connect to database

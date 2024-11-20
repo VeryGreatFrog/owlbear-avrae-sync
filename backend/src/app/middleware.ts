@@ -31,6 +31,7 @@ app.use(
 				"font-src": ["'self'", "data: https://fonts.gstatic.com", "https://cdn.jsdelivr.net"],
 				"connect-src": ["'self'", "https://discord.com", "*.google-analytics.com", "https://cdn.jsdelivr.net"],
 				"worker-src": ["'self'", "blob:"],
+				"frame-ancestors": ["'self'", "https://www.owlbear.rodeo"]
 			},
 			useDefaults: true
 		},
@@ -46,7 +47,7 @@ app.use(
 		max: 100 // limit each IP to 100/1000 requests per windowMs
 	})
 );
-app.use(cors({ origin: ["*"] }));
+app.use(cors());
 app.use(compression());
 
 // ERROR HANDLING
