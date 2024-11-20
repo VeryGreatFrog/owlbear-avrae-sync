@@ -72,7 +72,7 @@ export default {
 
 					// Add active threads
 					activeThreads.threads.forEach(thread =>
-						addChannelToCategory(parentCategory, `${channel.name} -> ${thread.name}`, thread.id)
+						addChannelToCategory(parentCategory, `${channel.name} 🡆 ${thread.name}`, thread.id)
 					);
 				}
 			}
