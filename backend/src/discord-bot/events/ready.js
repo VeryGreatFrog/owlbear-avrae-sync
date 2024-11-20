@@ -54,7 +54,7 @@ export default {
                     addChannelToCategory(parentCategory, channel.name, channel.id);
                     const activeThreads = await channel.threads.fetchActive();
                     // Add active threads
-                    activeThreads.threads.forEach(thread => addChannelToCategory(parentCategory, `${channel.name} -> ${thread.name}`, thread.id));
+                    activeThreads.threads.forEach(thread => addChannelToCategory(parentCategory, `${channel.name} 🡆 ${thread.name}`, thread.id));
                 }
             }
             removeEmptyKeys(result);
