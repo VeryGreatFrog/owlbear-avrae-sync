@@ -1,5 +1,5 @@
 import { insertInit } from "../../../src/database/api.js";
-import { trackedMessageCache } from "../../../src/database/database.js";
+import { collections, trackedMessageCache } from "../../../src/database/database.js";
 import { ChannelType, Events } from "discord.js";
 const removeEmptyKeys = (obj) => {
     for (const key in obj) {
@@ -10,13 +10,14 @@ const removeEmptyKeys = (obj) => {
 };
 let getChannels;
 let startWatching;
-export { getChannels, startWatching };
+let isMessagePinned;
+export { getChannels, isMessagePinned, startWatching };
 export default {
     name: Events.ClientReady,
     once: true,
     async execute(client) {
-        console.log(`Ready! Logged in as ${client.user?.tag}`);
-        getChannels = async function getAllChannels(guildId) {
+        getChannels = async (guildId) => {
+            console.log("Getting data for ", guildId);
             // Fetch the guild by ID
             const guild = await client.guilds.fetch(guildId);
             if (!guild) {
@@ -25,12 +26,15 @@ export default {
             // Fetch all channels in the guild
             const channels = await guild.channels.fetch();
             const result = {};
+            const trackedChannels = ((await collections?.activeInits?.find({}, { projection: { _id: 0, channelId: 1 } }).toArray()) || []).map(x => x.channelId);
             // Helper function to add a channel to the result object
             const addChannelToCategory = (category, channelName, channelId) => {
                 if (!result[category]) {
                     result[category] = {};
                 }
-                result[category][channelId] = channelName;
+                if (trackedChannels.includes(channelId)) {
+                    result[category][channelId] = channelName;
+                }
             };
             for (const channel of channels.values()) {
                 if (!channel)
@@ -54,6 +58,7 @@ export default {
                 }
             }
             removeEmptyKeys(result);
+            console.log("Done!");
             return {
                 metadata: {
                     guildName: guild.name
@@ -79,7 +84,24 @@ export default {
                 return;
             if (trackedMessageCache.includes(initPost?.id))
                 return;
-            insertInit(channelId, initPost?.id, initPost?.content);
+            insertInit(channelId, initPost?.id, initPost.guildId || "", initPost?.content);
+        };
+        isMessagePinned = async (channelId, messageId) => {
+            try {
+                // Fetch the channel
+                const channel = await client.channels.fetch(channelId);
+                if (!channel || !channel.isTextBased()) {
+                    console.log(`Channel ${channelId} is not valid or not text-based.`);
+                    return false;
+                }
+                // Fetch the message
+                const message = await channel.messages.fetch(messageId);
+                // Return the pinned status
+                return message.pinned;
+            }
+            catch {
+                return false;
+            }
         };
     },
 };

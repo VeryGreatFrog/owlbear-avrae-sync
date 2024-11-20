@@ -1,8 +1,8 @@
 import { app } from "../app/app.js";
 import { broadcastInit } from "../app/socket.js";
 import { collections, trackedMessageCache } from "./database.js";
-export async function insertInit(channelId, messageId, newContent) {
-    const data = { channelId, content: newContent, messageId, lastUpdated: Date.now() };
+export async function insertInit(channelId, messageId, guildId, newContent) {
+    const data = { channelId, content: newContent, messageId, guildId, lastUpdated: Date.now() };
     try {
         if (!data.channelId)
             return null;
@@ -13,7 +13,6 @@ export async function insertInit(channelId, messageId, newContent) {
         else {
             console.log("database", "Adding new initiative to collection");
             await collections.activeInits?.insertOne(data);
-            trackedMessageCache.push(messageId);
         }
         broadcastInit(channelId);
     }
