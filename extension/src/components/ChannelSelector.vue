@@ -4,7 +4,6 @@ import room from "../managers/ChannelConnection";
 import { socket } from "../socket";
 import OBR from "@owlbear-rodeo/sdk";
 
-
 const guildId = ref(room.guildId);
 onMounted(() => {
 	guildId.value = room.guildId
@@ -14,23 +13,32 @@ const isLoadingGuild = ref(true)
 const isEditingGuild = ref(false);
 const guildData = ref<Response["data"] | null>();
 
-const updateGuild = async (shouldSet = true) => {
-	isLoadingGuild.value = true
+const updateGuild = async (shouldSet = true, shouldLoad = true) => {
+	if (shouldLoad) isLoadingGuild.value = true
 	isEditingGuild.value = false
 	if (shouldSet) await room.setGuild(guildId.value);
 
-	socket.emit("getChannels", room.guildId, (response: Response) => {
+	socket.emit("getChannels", room.guildId, async (response: Response) => {
 		if (response.data) {
 			guildData.value = response.data;
+
+			if (!guildData.value || !guildData.value.channels) return
+			const combinedObject = Object.values(guildData.value.channels).reduce((acc, child) => {
+				return { ...acc, ...child };
+			}, {});
+
+			if (!Object.keys(combinedObject).includes(room.channelId)) {
+				await room.setChannel("", true)
+			}
 		}
 		else {
 			guildData.value = null;
 			//OBR.notification.show("Could not retrieve this server", "WARNING")
 		}
-		isLoadingGuild.value = false
+		if (shouldLoad) isLoadingGuild.value = false
 	});
 }
-watch(() => guildId.value, async () => {
+watch(() => guildId.value, () => {
 	updateGuild()
 });
 updateGuild(false)
@@ -57,8 +65,8 @@ const channelName = computed(() => {
 
 const isEditingChannel = ref(false)
 const channelId = ref(room.channelId)
-watch(() => channelId.value, async () => { 
-	await room.setChannel(channelId.value)
+watch(() => channelId.value, async () => {
+	await room.setChannel(channelId.value, true)
 	isEditingChannel.value = false;
 
 })
@@ -69,16 +77,23 @@ watch(() => isEditingGuild.value, () => {
 	}
 })
 
-OBR.room.getMetadata().then(x => console.log(x))
+
+socket.on("updateGuild", async (serverId) => {
+	if (serverId === room.guildId) {
+		await updateGuild(false, false)
+	}
+})
 </script>
 
 <template>
 	<div class="table" v-if="!isLoadingGuild">
 		<div class="guild">
 			<b>
-				{{ isEditingGuild ? 'Choose server' : 'Server' }} 
-				<svg v-if="!isEditingGuild" @click="isEditingGuild = true" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 20 20">
-					<path fill="#888888" d="m16.77 8l1.94-2a1 1 0 0 0 0-1.41l-3.34-3.3a1 1 0 0 0-1.41 0L12 3.23zM1 14.25V19h4.75l9.96-9.96l-4.75-4.75z" />
+				{{ isEditingGuild ? 'Choose server' : 'Server' }}
+				<svg v-if="!isEditingGuild" @click="isEditingGuild = true" xmlns="http://www.w3.org/2000/svg" width="32"
+					height="32" viewBox="0 0 20 20">
+					<path fill="#888888"
+						d="m16.77 8l1.94-2a1 1 0 0 0 0-1.41l-3.34-3.3a1 1 0 0 0-1.41 0L12 3.23zM1 14.25V19h4.75l9.96-9.96l-4.75-4.75z" />
 				</svg>
 			</b>
 			<div class="input">
@@ -92,15 +107,17 @@ OBR.room.getMetadata().then(x => console.log(x))
 				</template>
 				<template v-else>
 					<span>Enter a server ID</span>
-					<input v-if="isEditingGuild" v-model.lazy="guildId" type="text" placeholder="Guild ID" pattern="\d{16,}"
-					title="Enter a valid guild ID">
+					<input v-if="isEditingGuild" v-model.lazy="guildId" type="text" placeholder="Guild ID"
+						pattern="\d{16,}" title="Enter a valid guild ID" @blur="isEditingGuild = false">
 				</template>
 			</div>
 		</div>
 		<div class="channel" v-if="guildData?.channels">
-			<b> {{ isEditingChannel ? 'Choose channel' : 'Channel' }} 					
-				<svg v-if="!isEditingChannel" @click="isEditingChannel = true" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 20 20">
-					<path fill="#888888" d="m16.77 8l1.94-2a1 1 0 0 0 0-1.41l-3.34-3.3a1 1 0 0 0-1.41 0L12 3.23zM1 14.25V19h4.75l9.96-9.96l-4.75-4.75z" />
+			<b> {{ isEditingChannel ? 'Choose channel' : 'Channel' }}
+				<svg v-if="!isEditingChannel" @click="isEditingChannel = true" xmlns="http://www.w3.org/2000/svg"
+					width="32" height="32" viewBox="0 0 20 20">
+					<path fill="#888888"
+						d="m16.77 8l1.94-2a1 1 0 0 0 0-1.41l-3.34-3.3a1 1 0 0 0-1.41 0L12 3.23zM1 14.25V19h4.75l9.96-9.96l-4.75-4.75z" />
 				</svg>
 			</b>
 			<div class="input">
@@ -113,7 +130,10 @@ OBR.room.getMetadata().then(x => console.log(x))
 					</span>
 				</template>
 				<template v-else>
-					<select v-if="guildData" v-model.lazy="channelId">
+					<select v-if="guildData" v-model.lazy="channelId" placeholder="Select channel.."
+						@blur="isEditingChannel = false">
+						<option v-if="Object.keys(guildData.channels).length === 0" disabled value="d"> No channels found in this server. Have you started Avrae Initiative?</option>
+						<option v-else value=""> --- No Channel --- </option>
 						<optgroup v-for="catChannels, cat of guildData.channels" :key="cat" :label="cat.toLowerCase()">
 							<option v-for="channelName, channelId in catChannels" :key="channelId" :value="channelId">
 								{{ channelName }}
@@ -131,8 +151,8 @@ OBR.room.getMetadata().then(x => console.log(x))
 		</div>
 	</div>
 	<div class="loading" v-else>
-			Loading...
-		</div>
+		Loading...
+	</div>
 	<div class="inputs">
 
 	</div>
@@ -145,6 +165,9 @@ OBR.room.getMetadata().then(x => console.log(x))
 	margin-inline: 1rem;
 	gap: .2rem;
 
+	.guild, .channel {
+		max-width: 1fr;
+	}
 	svg {
 		cursor: pointer;
 		padding-inline: .2rem;
@@ -165,9 +188,9 @@ OBR.room.getMetadata().then(x => console.log(x))
 		display: grid;
 		grid-template-columns: 1fr;
 		grid-template-rows: 1fr;
-
 		select {
 			margin-top: .2rem;
+			width: 100%;
 		}
 	}
 
@@ -183,5 +206,4 @@ OBR.room.getMetadata().then(x => console.log(x))
 .loading {
 	margin: auto;
 }
-
 </style>

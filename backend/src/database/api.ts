@@ -8,10 +8,11 @@ export interface initData {
 	messageId: string;
 	content: string;
 	lastUpdated: number;
+	guildId: string;
 }
 
-export async function insertInit(channelId: string, messageId: string, newContent: string) {
-	const data = { channelId, content: newContent, messageId, lastUpdated: Date.now() };
+export async function insertInit(channelId: string, messageId: string, guildId: string, newContent: string) {
+	const data = { channelId, content: newContent, messageId, guildId, lastUpdated: Date.now() };
 	try {
 		if (!data.channelId)
 			return null;
@@ -22,7 +23,6 @@ export async function insertInit(channelId: string, messageId: string, newConten
 		else {
 			console.log("database", "Adding new initiative to collection");
 			await collections.activeInits?.insertOne(data);
-			trackedMessageCache.push(messageId);
 		}
 		broadcastInit(channelId);
 	}

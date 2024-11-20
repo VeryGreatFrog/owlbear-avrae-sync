@@ -23,13 +23,13 @@ export default reactive({
 
 		this.channelId = id;
 		OBR.room.setMetadata({ [getPluginId("roomSettings")]: { channelId: id, guildId: this.guildId } }).then(() => {
-			OBR.broadcast.sendMessage(getPluginId("broadcastChannel"), id);
+			OBR.broadcast.sendMessage(getPluginId("broadcastSettings"), id);
 		});
 
 		// Request the server to watch the channel
 
 		if (id !== "") socket.emit("startWatching", id, (response: { status: "ok" | "error"}) => {
-			console.log(response.status)
+			//console.log(response.status)
 		})
 	},
 	async setGuild(id: string, acceptEmpty = false) {
@@ -43,14 +43,13 @@ export default reactive({
 
 		if (!isGM)
 			return;
-
-		OBR.room.setMetadata({ [getPluginId("roomSettings")]: { guildId: id, channelId: this.channelId } }).then(() => {
-			OBR.broadcast.sendMessage(getPluginId("broadcastGuild"), id);
+		
+		OBR.room.setMetadata({ [getPluginId("roomSettings")]: { guildId: id, channelId: "" } }).then(() => {
+			OBR.broadcast.sendMessage(getPluginId("broadcastGuild"), { guildId: id, channelId: ""});
 		});
-		await this.setChannel("", true)
-
+		// await this.setChannel("", true)
+		console.log("Set to ", await OBR.room.getMetadata())
 		this.guildId = id;
-
 	},
 
 	// Initialize effects for this ChannelConnection
@@ -59,9 +58,7 @@ export default reactive({
 		const metadata = await OBR.room.getMetadata();
 		this.channelId = (metadata[getPluginId("roomSettings")] as any).channelId;
 		this.guildId = (metadata[getPluginId("roomSettings")] as any).guildId;
-
 		// register broadcast events
-		OBR.broadcast.onMessage(getPluginId("broadcastChannel"), (event: any) => { this.channelId = event.data; });
-		OBR.broadcast.onMessage(getPluginId("broadcastGuild"), (event: any) => { this.guildId = event.data; });
+		OBR.broadcast.onMessage(getPluginId("broadcastSettings"), (event: any) => { this.guildId = event.data.guildId; this.channelId = event.data.channelId });
 	},
 });
