@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { getChannels, startWatching } from "../discord-bot/events/ready";
+import { getChannels, startWatching } from "../discord-bot/events/ready.js";
 
 let io: Server;
 

@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { Client, Collection, GatewayIntentBits, IntentsBitField, Partials } from "discord.js";
-import { app } from "../app/app";
+import { app } from "../app/app.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,7 +15,7 @@ const client = new Client({ partials: [Partials.Message], intents: [GatewayInten
 export default client;
 
 const eventsPath = path.join(__dirname, "events");
-const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith(".ts") || file.endsWith(".js"));
+const eventFiles = fs.readdirSync(eventsPath).filter((file) => file.endsWith(".ts") || file.endsWith(".js"));
 
 for (const file of eventFiles) {
 	const filePath = path.join(eventsPath, file);
