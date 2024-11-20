@@ -151,7 +151,7 @@ export const buildHealthStatusToken = async (item: Image, boundingBox: BoundingB
 	return [healthBar, healthText];
 };
 
-const conditionTokens = ["blessed", "blinded", "charmed", "deafened", "frightened", "grappled", "incapacitated", "invisible", "paralyzed", "petrified", "poisoned", "prone", "restrained", "stunned", "unconscious"];
+const conditionTokens = ["blessed", "blinded", "charmed", "deafened", "frightened", "grappled", "incapacitated", "invisible", "paralyzed", "petrified", "poisoned", "prone", "restrained", "stunned", "unconscious", "hasted", "dodge", "slowed"];
 const imageSize = 256;
 
 export const buildConditionTokens = async (item: Image, boundingBox: BoundingBox, conditions: string) => {
