@@ -26,13 +26,13 @@ export default {
 		getChannels = async (guildId: string): Promise<ChannelData> => {
 			console.log("Getting data for ", guildId);
 			// Fetch the guild by ID
-			const guild = await client.guilds.fetch(guildId);
+			const guild = await client.guilds.cache.get(guildId);
 			if (!guild) {
 				throw new Error(`Guild with ID ${guildId} not found`);
 			}
 
 			// Fetch all channels in the guild
-			const channels = await guild.channels.fetch();
+			const channels = guild.channels.cache;
 			const result: ChannelsByCategory = { };
 
 			const trackedChannels = ((await collections?.activeInits?.find({}, { projection: { _id: 0, channelId: 1 } }).toArray()) || []).map(x => x.channelId);
