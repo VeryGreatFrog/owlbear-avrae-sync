@@ -8,7 +8,7 @@ const guildId = ref(room.guildId);
 onMounted(() => {
 	guildId.value = room.guildId
 })
-const isLoadingGuild = ref(true)
+const isLoadingGuild = ref(false)
 
 const isEditingGuild = ref(false);
 const guildData = ref<Response["data"] | null>();
@@ -89,8 +89,6 @@ socket.on("updateGuild", async (serverId) => {
 		await updateGuild(false)
 	}
 })
-
-isLoadingGuild.value = false
 </script>
 
 <template>
