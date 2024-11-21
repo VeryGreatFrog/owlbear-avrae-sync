@@ -56,8 +56,8 @@ export default reactive({
 	async init() {
 		// Load the current metadata
 		const metadata = await OBR.room.getMetadata();
-		this.channelId = (metadata[getPluginId("roomSettings")] as any).channelId;
-		this.guildId = (metadata[getPluginId("roomSettings")] as any).guildId;
+		this.channelId = (metadata[getPluginId("roomSettings")] as any)?.channelId || "";
+		this.guildId = (metadata[getPluginId("roomSettings")] as any)?.guildId || "";
 		// register broadcast events
 		OBR.broadcast.onMessage(getPluginId("broadcastSettings"), (event: any) => { this.guildId = event.data.guildId; this.channelId = event.data.channelId });
 	},
