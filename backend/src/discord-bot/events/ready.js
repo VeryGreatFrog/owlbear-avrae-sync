@@ -19,7 +19,7 @@ export default {
         getChannels = async (guildId) => {
             console.log("Getting data for ", guildId);
             // Fetch the guild by ID
-            const guild = await client.guilds.cache.get(guildId);
+            const guild = client.guilds.cache.get(guildId);
             if (!guild) {
                 throw new Error(`Guild with ID ${guildId} not found`);
             }
@@ -37,8 +37,6 @@ export default {
                 }
             };
             for (const channel of channels.values()) {
-                if (!channel)
-                    continue;
                 // Determine the parent category
                 const parentCategory = channel.parent ? channel.parent.name : "No Category";
                 // Handle categories
@@ -51,11 +49,29 @@ export default {
                 // Handle text channels, voice channels, and forum channels
                 if (channel.type === ChannelType.GuildText
                     || channel.type === ChannelType.GuildForum) {
-                    addChannelToCategory(parentCategory, channel.name, channel.id);
-                    const activeThreads = await channel.threads.fetchActive();
-                    // Add active threads
-                    activeThreads.threads.forEach(thread => addChannelToCategory(parentCategory, `${channel.name} 🡆 ${thread.name}`, thread.id));
+                    addChannelToCategory(parentCategory, `#${channel.name}`, channel.id);
+                    // const activeThreads = await channel.threads.fetchActive();
+                    // // Add active threads
+                    // activeThreads.threads.forEach(thread =>
+                    // 	addChannelToCategory(parentCategory, `${channel.name} 🡆 ${thread.name}`, thread.id)
+                    // );
                 }
+            }
+            const activeThreads = await Promise.all(channels.map((channel) => {
+                if (channel.type === ChannelType.GuildText || channel.type === ChannelType.GuildForum) {
+                    return channel.threads.fetchActive();
+                }
+                return null;
+            }));
+            for (const channelThreads of activeThreads) {
+                if (!channelThreads)
+                    continue;
+                channelThreads.threads.forEach((thread) => {
+                    const parent = thread.parent;
+                    if (!parent)
+                        return;
+                    addChannelToCategory(parent?.parent?.name || "", `#${parent.name} 🡆 #${thread.name}`, thread.id);
+                });
             }
             removeEmptyKeys(result);
             return {
