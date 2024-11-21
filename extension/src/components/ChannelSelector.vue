@@ -13,32 +13,32 @@ const isLoadingGuild = ref(true)
 const isEditingGuild = ref(false);
 const guildData = ref<Response["data"] | null>();
 
-const updateGuild = async (shouldSet = true, shouldLoad = true) => {
-	if (shouldLoad) isLoadingGuild.value = true
+const updateGuild = async (shouldSet = true,) => {
 	isEditingGuild.value = false
 	if (shouldSet) await room.setGuild(guildId.value, true);
 
 
 	if (room.guildId !== "")  {
-	socket.emit("getChannels", room.guildId, async (response: Response) => {
-		if (response.data) {
-			guildData.value = response.data;
+		isLoadingGuild.value = true
+		socket.emit("getChannels", room.guildId, async (response: Response) => {
+			if (response.data) {
+				guildData.value = response.data;
 
-			if (!guildData.value || !guildData.value.channels) return
-			const combinedObject = Object.values(guildData.value.channels).reduce((acc, child) => {
-				return { ...acc, ...child };
-			}, {});
+				if (!guildData.value || !guildData.value.channels) return
+				const combinedObject = Object.values(guildData.value.channels).reduce((acc, child) => {
+					return { ...acc, ...child };
+				}, {});
 
-			if (!Object.keys(combinedObject).includes(room.channelId)) {
-				await room.setChannel("", true)
+				if (!Object.keys(combinedObject).includes(room.channelId)) {
+					await room.setChannel("", true)
+				}
 			}
-		}
-		else {
-			guildData.value = null;
-			//OBR.notification.show("Could not retrieve this server", "WARNING")
-		}
-		if (shouldLoad) isLoadingGuild.value = false
-	}) 
+			else {
+				guildData.value = null;
+				//OBR.notification.show("Could not retrieve this server", "WARNING")
+			}
+			isLoadingGuild.value = false
+		}) 
 	} else {
 		guildData.value = null
 		isLoadingGuild.value = false
@@ -86,7 +86,7 @@ watch(() => isEditingGuild.value, () => {
 
 socket.on("updateGuild", async (serverId) => {
 	if (serverId === room.guildId) {
-		await updateGuild(false, false)
+		await updateGuild(false)
 	}
 })
 
@@ -113,7 +113,7 @@ isLoadingGuild.value = false
 						Not linked to a server.
 					</span>
 					<span v-else>
-						Server ID ({{ room.guildId }}) not valid.
+						This is not a valid server. ({{ room.guildId }}).
 					</span>
 				</template>
 				<template v-else>
@@ -165,7 +165,7 @@ isLoadingGuild.value = false
 		</div>
 	</div>
 	<div class="loading" v-else>
-		Loading...
+		Waiting for Discord...
 	</div>
 </template>
 
