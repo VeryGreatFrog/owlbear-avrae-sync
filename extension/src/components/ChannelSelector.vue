@@ -16,8 +16,10 @@ const guildData = ref<Response["data"] | null>();
 const updateGuild = async (shouldSet = true, shouldLoad = true) => {
 	if (shouldLoad) isLoadingGuild.value = true
 	isEditingGuild.value = false
-	if (shouldSet) await room.setGuild(guildId.value);
+	if (shouldSet) await room.setGuild(guildId.value, true);
 
+
+	if (room.guildId !== "")  {
 	socket.emit("getChannels", room.guildId, async (response: Response) => {
 		if (response.data) {
 			guildData.value = response.data;
@@ -36,7 +38,11 @@ const updateGuild = async (shouldSet = true, shouldLoad = true) => {
 			//OBR.notification.show("Could not retrieve this server", "WARNING")
 		}
 		if (shouldLoad) isLoadingGuild.value = false
-	});
+	}) 
+	} else {
+		guildData.value = null
+		isLoadingGuild.value = false
+	}
 }
 watch(() => guildId.value, () => {
 	updateGuild()
@@ -103,14 +109,20 @@ isLoadingGuild.value = false
 					<span v-if="guildData?.metadata.guildName">
 						Linked to <u> {{ guildData.metadata.guildName }}</u>
 					</span>
+					<span v-else-if="room.guildId === ''">
+						Not linked to a server.
+					</span>
 					<span v-else>
-						Select a valid server
+						Server ID ({{ room.guildId }}) not valid.
 					</span>
 				</template>
 				<template v-else>
 					<span>Enter a server ID</span>
-					<input v-if="isEditingGuild" v-model.lazy="guildId" type="text" placeholder="Guild ID"
+					<div class="check-wrapper">
+						<input v-if="isEditingGuild" v-model.lazy="guildId" type="text" placeholder="Guild ID"
 						pattern="\d{16,}" title="Enter a valid guild ID" @blur="isEditingGuild = false">
+						<svg @click="updateGuild()" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 20 20"><path fill="#888888" d="M7 14.2L2.8 10l-1.4 1.4L7 17L19 5l-1.4-1.4z"/></svg>
+					</div>
 				</template>
 			</div>
 		</div>
@@ -155,9 +167,6 @@ isLoadingGuild.value = false
 	<div class="loading" v-else>
 		Loading...
 	</div>
-	<div class="inputs">
-
-	</div>
 </template>
 
 <style scoped>
@@ -170,6 +179,12 @@ isLoadingGuild.value = false
 	.guild, .channel {
 		max-width: 1fr;
 	}
+
+	.check-wrapper {
+		display: flex;
+	}
+
+
 	svg {
 		cursor: pointer;
 		padding-inline: .2rem;
