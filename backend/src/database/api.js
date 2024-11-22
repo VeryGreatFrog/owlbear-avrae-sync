@@ -1,25 +1,26 @@
 import { app } from "../app/app.js";
 import { broadcastInit } from "../app/socket.js";
 import { collections, trackedMessageCache } from "./database.js";
-export async function insertInit(channelId, messageId, guildId, newContent) {
-    const data = { channelId, content: newContent, messageId, guildId, lastUpdated: Date.now() };
+export async function insertInit(channelId, channelName, categoryName, messageId, guildId, newContent) {
+    const data = { channelId, content: newContent, messageId, channelName, categoryName, guildId, lastUpdated: Date.now(), addedBy: "inserter" };
+    console.log("channel name", channelName);
+    let result;
     try {
         if (!data.channelId)
             return null;
-        if (trackedMessageCache.includes(messageId)) {
-            console.log("database", `Updating initiative with id ${channelId}`);
-            await collections.activeInits?.updateOne({ channelId }, { $set: { content: newContent } });
-        }
-        else {
-            console.log("database", "Adding new initiative to collection");
-            await collections.activeInits?.insertOne(data);
-        }
+        console.log("database", "Adding new initiative to collection");
+        await collections.activeInits?.insertOne(data);
+        trackedMessageCache.add(data.messageId);
         broadcastInit(channelId);
+        return result;
     }
     catch (err) {
         console.log("critical", err);
         return null;
     }
+}
+export async function updateInit(channelId, content) {
+    await collections.activeInits?.updateOne({ channelId }, { $set: { content, addedBy: "updater" } });
 }
 const getCombatants = (list) => {
     const byLine = list.split("\n");

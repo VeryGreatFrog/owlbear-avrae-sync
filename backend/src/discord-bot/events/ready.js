@@ -1,6 +1,5 @@
-import { insertInit } from "../../../src/database/api.js";
-import { collections, trackedMessageCache } from "../../../src/database/database.js";
-import { ChannelType, Events } from "discord.js";
+import { collections } from "../../../src/database/database.js";
+import { Events } from "discord.js";
 const removeEmptyKeys = (obj) => {
     for (const key in obj) {
         if (Object.keys(obj[key]).length === 0) {
@@ -9,9 +8,8 @@ const removeEmptyKeys = (obj) => {
     }
 };
 let getChannels;
-let startWatching;
 let isMessagePinned;
-export { getChannels, isMessagePinned, startWatching };
+export { getChannels, isMessagePinned };
 export default {
     name: Events.ClientReady,
     once: true,
@@ -23,56 +21,8 @@ export default {
             if (!guild) {
                 throw new Error(`Guild with ID ${guildId} not found`);
             }
-            // Fetch all channels in the guild
-            const channels = guild.channels.cache;
-            const result = {};
-            const trackedChannels = ((await collections?.activeInits?.find({}, { projection: { _id: 0, channelId: 1 } }).toArray()) || []).map(x => x.channelId);
-            // Helper function to add a channel to the result object
-            const addChannelToCategory = (category, channelName, channelId) => {
-                if (!result[category]) {
-                    result[category] = {};
-                }
-                if (trackedChannels.includes(channelId)) {
-                    result[category][channelId] = channelName;
-                }
-            };
-            for (const channel of channels.values()) {
-                // Determine the parent category
-                const parentCategory = channel.parent ? channel.parent.name : "No Category";
-                // Handle categories
-                if (channel.type === ChannelType.GuildCategory) {
-                    if (!result[channel.name]) {
-                        result[channel.name] = {};
-                    }
-                    continue;
-                }
-                // Handle text channels, voice channels, and forum channels
-                if (channel.type === ChannelType.GuildText
-                    || channel.type === ChannelType.GuildForum) {
-                    addChannelToCategory(parentCategory, `#${channel.name}`, channel.id);
-                    // const activeThreads = await channel.threads.fetchActive();
-                    // // Add active threads
-                    // activeThreads.threads.forEach(thread =>
-                    // 	addChannelToCategory(parentCategory, `${channel.name} 🡆 ${thread.name}`, thread.id)
-                    // );
-                }
-            }
-            const activeThreads = await Promise.all(channels.map((channel) => {
-                if (channel.type === ChannelType.GuildText || channel.type === ChannelType.GuildForum) {
-                    return channel.threads.fetchActive();
-                }
-                return null;
-            }));
-            for (const channelThreads of activeThreads) {
-                if (!channelThreads)
-                    continue;
-                channelThreads.threads.forEach((thread) => {
-                    const parent = thread.parent;
-                    if (!parent)
-                        return;
-                    addChannelToCategory(parent?.parent?.name || "", `#${parent.name} 🡆 #${thread.name}`, thread.id);
-                });
-            }
+            const trackedChannels = ((await collections?.activeInits?.find({ guildId, channelName: { $exists: true, $ne: "" } }, { projection: { _id: 0, channelId: 1, categoryName: 1, channelName: 1 } }).toArray()) || []);
+            const result = transformData(trackedChannels);
             removeEmptyKeys(result);
             return {
                 metadata: {
@@ -80,26 +30,6 @@ export default {
                 },
                 channels: result
             };
-        };
-        startWatching = async (channelId) => {
-            const channel = await client.channels.fetch(channelId);
-            if (!channel)
-                return;
-            if (channel.type === ChannelType.GuildCategory)
-                return;
-            const pinnedMessages = await channel.messages.fetchPinned() || [];
-            let initPost = null;
-            for (const x of pinnedMessages) {
-                const data = x[1];
-                if (data.author.id === "261302296103747584") {
-                    initPost = data;
-                }
-            }
-            if (!initPost?.id)
-                return;
-            if (trackedMessageCache.includes(initPost?.id))
-                return;
-            insertInit(channelId, initPost?.id, initPost.guildId || "", initPost?.content);
         };
         isMessagePinned = async (channelId, messageId) => {
             try {
@@ -120,3 +50,15 @@ export default {
         };
     },
 };
+function transformData(data) {
+    return data.reduce((result, item) => {
+        const { categoryName, channelId, channelName } = item;
+        // Initialize the category if it doesn't exist
+        if (!result[categoryName]) {
+            result[categoryName] = {};
+        }
+        // Add channelId and channelName to the category object
+        result[categoryName][channelId] = channelName;
+        return result;
+    }, {});
+}

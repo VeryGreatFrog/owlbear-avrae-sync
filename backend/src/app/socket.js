@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { getChannels, startWatching } from "../discord-bot/events/ready.js";
+import { getChannels } from "../discord-bot/events/ready.js";
 let io;
 export const initSocket = (server) => {
     io = new Server(server);
@@ -11,20 +11,6 @@ export const initSocket = (server) => {
                 callback({
                     status: "ok",
                     data: guildData
-                });
-            }
-            catch (e) {
-                callback({
-                    status: "error",
-                    errror: e
-                });
-            }
-        });
-        socket.on("startWatching", async (channelId, callback) => {
-            try {
-                startWatching(channelId);
-                callback({
-                    status: "ok"
                 });
             }
             catch (e) {

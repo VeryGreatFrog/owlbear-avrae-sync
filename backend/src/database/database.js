@@ -3,7 +3,7 @@ import { isMessagePinned } from "../discord-bot/events/ready.js";
 // Connect to database
 export const collections = {};
 let database = null;
-export const trackedMessageCache = [];
+export const trackedMessageCache = new Set([]);
 export async function startDatabase() {
     let client;
     try {
@@ -65,6 +65,9 @@ export async function loadMessageCache() {
     //  now load the final result and set our cache to it
     const result = await collections.activeInits.find({}, { projection: { _id: 0, messageId: 1 } }).toArray();
     const array = result.map(doc => doc.messageId);
-    trackedMessageCache.push(...array);
-    console.log(`MongoDB: Loaded ${trackedMessageCache.length} messages to the cache to watch.`);
+    for (const m of array) {
+        trackedMessageCache.add(m);
+    }
+    console.log(trackedMessageCache);
+    console.log(`MongoDB: Loaded ${trackedMessageCache.size} messages to the cache to watch.`);
 }
