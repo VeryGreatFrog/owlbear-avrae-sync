@@ -74,7 +74,7 @@ interface ChannelsByCategory {
 }
 
 function transformData(data: any): ChannelsByCategory {
-	return data.reduce((result, item) => {
+	return data.reduce((result: any, item: any) => {
 		const { categoryName, channelId, channelName } = item;
 
 		// Initialize the category if it doesn't exist
