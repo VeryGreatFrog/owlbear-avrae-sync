@@ -135,7 +135,7 @@ socket.on("updateGuild", async (serverId) => {
 			<div class="input">
 				<template v-if="!isEditingChannel">
 					<span v-if="channelName">
-						Linked to <u>#{{ channelName }}</u>
+						Linked to <u>{{ channelName }}</u>
 					</span>
 					<span v-else @click="isEditingChannel = true">
 						Select a valid channel

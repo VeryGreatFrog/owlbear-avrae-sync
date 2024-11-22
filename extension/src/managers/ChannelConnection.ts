@@ -2,7 +2,7 @@ import OBR from "@owlbear-rodeo/sdk";
 
 import { reactive } from "vue";
 import { getPluginId } from "../helper";
-import { socket } from "../socket";
+
 export default reactive({
 	// The discord channel ID this room is connected to
 	channelId: "",
@@ -25,12 +25,6 @@ export default reactive({
 		OBR.room.setMetadata({ [getPluginId("roomSettings")]: { channelId: id, guildId: this.guildId } }).then(() => {
 			OBR.broadcast.sendMessage(getPluginId("broadcastSettings"), id);
 		});
-
-		// Request the server to watch the channel
-
-		if (id !== "") socket.emit("startWatching", id, (response: { status: "ok" | "error"}) => {
-			//console.log(response.status)
-		})
 	},
 	async setGuild(id: string, acceptEmpty = false) {
 		if (!acceptEmpty && id.length <= 16) {

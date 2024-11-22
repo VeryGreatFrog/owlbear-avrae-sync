@@ -4,32 +4,37 @@ import { broadcastInit } from "../app/socket.js";
 import { collections, trackedMessageCache } from "./database.js";
 
 export interface initData {
-	channelId: string;
-	messageId: string;
 	content: string;
 	lastUpdated: number;
 	guildId: string;
+	channelId: string;
+	messageId: string;
+	channelName: string;
+	categoryName: string;
 }
 
-export async function insertInit(channelId: string, messageId: string, guildId: string, newContent: string) {
-	const data = { channelId, content: newContent, messageId, guildId, lastUpdated: Date.now() };
+export async function insertInit(channelId: string, channelName: string, categoryName: string, messageId: string, guildId: string, newContent: string) {
+	const data = { channelId, content: newContent, messageId, channelName, categoryName, guildId, lastUpdated: Date.now(), addedBy: "inserter" };
+	console.log("channel name", channelName);
+	let result;
 	try {
 		if (!data.channelId)
 			return null;
-		if (trackedMessageCache.includes(messageId)) {
-			console.log("database", `Updating initiative with id ${channelId}`);
-			await collections.activeInits?.updateOne({ channelId }, { $set: { content: newContent } });
-		}
-		else {
-			console.log("database", "Adding new initiative to collection");
-			await collections.activeInits?.insertOne(data);
-		}
+
+		console.log("database", "Adding new initiative to collection");
+		await collections.activeInits?.insertOne(data);
+		trackedMessageCache.add(data.messageId);
 		broadcastInit(channelId);
+		return result;
 	}
 	catch (err) {
 		console.log("critical", err);
 		return null;
 	}
+}
+
+export async function updateInit(channelId: string, content: string) {
+	await collections.activeInits?.updateOne({ channelId }, { $set: { content, addedBy: "updater" } });
 }
 
 interface CombatantData {
