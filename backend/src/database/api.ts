@@ -146,7 +146,7 @@ const getCombatants = (list: string): Record<string, CombatantData> => {
 // @ts-expect-error Shut up
 app.get("/api/getInit/:id", async (req: Request, res: Response) => {
 	try {
-		const data = await collections.activeInits?.findOne({ channelId: req.params.id });
+		const data = await collections.activeInits?.findOne({ channelId: req.params.id, channelName: { $ne: "" } });
 		if (!data)
 			return res.json({ error: "No initiative for that channel found" });
 		const list = data.content.split("===============================")[1];
