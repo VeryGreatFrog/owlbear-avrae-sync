@@ -34,7 +34,7 @@ export async function insertInit(channelId: string, channelName: string, categor
 }
 
 export async function updateInit(channelId: string, content: string) {
-	await collections.activeInits?.updateOne({ channelId }, { $set: { content, addedBy: "updater" } });
+	await collections.activeInits?.updateMany({ channelId }, { $set: { content, addedBy: "updater" } });
 }
 
 interface CombatantData {

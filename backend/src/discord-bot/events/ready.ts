@@ -1,9 +1,8 @@
 import type { GuildTextBasedChannel } from "discord.js";
 /* eslint-disable import/no-mutable-exports */
 import type { ClientWithCommands } from "../client.js";
-import { insertInit } from "@/src/database/api.js";
-import { collections, trackedMessageCache } from "@/src/database/database.js";
-import { ChannelType, Events } from "discord.js";
+import { collections, } from "@/src/database/database.js";
+import { Events } from "discord.js";
 
 const removeEmptyKeys = (obj: { [key: string]: any }) => {
 	for (const key in obj) {

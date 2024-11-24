@@ -105,7 +105,7 @@ socket.on("updateGuild", async (serverId) => {
 			<div class="input">
 				<template v-if="!isEditingGuild">
 					<span v-if="guildData?.metadata.guildName">
-						Linked to <u> {{ guildData.metadata.guildName }}</u>
+						<u> {{ guildData.metadata.guildName }}</u>
 					</span>
 					<span v-else-if="room.guildId === ''">
 						Not linked to a server.
@@ -135,10 +135,13 @@ socket.on("updateGuild", async (serverId) => {
 			<div class="input">
 				<template v-if="!isEditingChannel">
 					<span v-if="channelName">
-						Linked to <u>{{ channelName }}</u>
+						<u>{{ channelName }}</u>
+					</span>
+					<span v-else-if="room.channelId === ''">
+						Not linked to a channel.
 					</span>
 					<span v-else @click="isEditingChannel = true">
-						Select a valid channel
+						This is not a valid channel ({{ room.channelId }})
 					</span>
 				</template>
 				<template v-else>
