@@ -1,4 +1,4 @@
-import { collections } from "../../../src/database/database.js";
+import { collections, } from "../../../src/database/database.js";
 import { Events } from "discord.js";
 const removeEmptyKeys = (obj) => {
     for (const key in obj) {
