@@ -21,6 +21,7 @@ export async function insertInit(channelId, channelName, categoryName, messageId
 }
 export async function updateInit(channelId, content) {
     await collections.activeInits?.updateMany({ channelId }, { $set: { content, addedBy: "updater" } });
+    broadcastInit(channelId);
 }
 const getCombatants = (list) => {
     const byLine = list.split("\n");
